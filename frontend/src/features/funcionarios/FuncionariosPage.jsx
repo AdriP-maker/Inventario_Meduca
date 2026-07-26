@@ -80,15 +80,15 @@ const FuncionariosPage = () => {
     try {
       if (editId) {
         await api.put(`/funcionarios/${editId}`, formData);
-        toast.success('Funcionario actualizado.');
+        toast.success('Funcionario actualizado con éxito en el sistema.');
       } else {
         await api.post('/funcionarios', formData);
-        toast.success('Funcionario registrado.');
+        toast.success('Nuevo funcionario registrado con éxito en sistema.');
       }
       setShowModal(false);
       fetchFuncionarios();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Error al guardar.');
+      toast.error('Ocurrió un error al guardar el funcionario.');
     }
   };
 
@@ -102,11 +102,11 @@ const FuncionariosPage = () => {
     setDeleting(true);
     try {
       await api.delete(`/funcionarios/${deleteId}`);
-      toast.success('Funcionario eliminado.');
+      toast.success('Funcionario eliminado del sistema con éxito.');
       setShowDeleteModal(false);
       fetchFuncionarios();
     } catch (err) {
-      toast.error('Error al eliminar.');
+      toast.error('Ocurrió un error al eliminar el funcionario.');
     } finally {
       setDeleting(false);
     }

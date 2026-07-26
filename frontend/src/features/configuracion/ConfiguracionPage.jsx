@@ -40,10 +40,10 @@ const ConfiguracionPage = () => {
     try {
       const res = await api.post('/configuracion', config);
       if (res.data.success) {
-        toast.success('Configuración guardada.');
+        toast.success('Configuración general guardada con éxito.');
       }
     } catch (err) {
-      toast.error('Error al guardar.');
+      toast.error('Ocurrió un error al guardar la configuración.');
     }
   };
 
@@ -54,7 +54,7 @@ const ConfiguracionPage = () => {
       return;
     }
     if (nuevaPassword !== confirmarPassword) {
-      toast.error('Las contraseñas no coinciden.');
+      toast.error('Las contraseñas ingresadas no coinciden entre sí.');
       return;
     }
     try {
@@ -63,12 +63,12 @@ const ConfiguracionPage = () => {
         confirmar_password: confirmarPassword
       });
       if (res.data.success) {
-        toast.success('Contraseña actualizada.');
+        toast.success('Contraseña de usuario actualizada con éxito.');
         setNuevaPassword('');
         setConfirmarPassword('');
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Error al actualizar contraseña');
+      toast.error('Ocurrió un error al actualizar la contraseña.');
     }
   };
 

@@ -62,11 +62,11 @@ const PrestamoWizardPage = () => {
       });
 
       if (res.data.success) {
-        toast.success('Préstamo registrado.');
+        toast.success('Préstamo registrado exitosamente en el sistema.');
         navigate('/dashboard');
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Error al registrar préstamo');
+      toast.error('Ocurrió un error al registrar el préstamo.');
     } finally {
       setSubmitting(false);
     }
@@ -125,40 +125,38 @@ const PrestamoWizardPage = () => {
           </div>
         </div>
 
-        {/* Step 1: Seleccionar Funcionario */}
+        {/* Wizard Steps Content */}
         {step === 1 && (
           <div>
-            <h5 className="fw-bold mb-3">1. Seleccionar Funcionario que solicita el préstamo</h5>
-            <div className="mb-4">
-              <label className="form-label fw-semibold">Buscar / Seleccionar Funcionario</label>
-              <select
-                className="form-select form-select-lg"
-                value={selectedFuncionario?.id || ''}
-                onChange={(e) => {
-                  const f = funcionarios.find((item) => item.id === parseInt(e.target.value));
-                  setSelectedFuncionario(f);
-                }}
-              >
-                <option value="">-- Seleccionar Funcionario registrado --</option>
-                {funcionarios.map((f) => (
-                  <option key={f.id} value={f.id}>
-                    {f.nombre} {f.apellido} — {f.cargo} ({f.cedula})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {selectedFuncionario && (
-              <div className="p-3 bg-light rounded border border-primary-subtle d-flex align-items-center gap-3">
-                <UserCheck size={32} className="text-primary" />
-                <div>
-                  <h6 className="fw-bold mb-1">{selectedFuncionario.nombre} {selectedFuncionario.apellido}</h6>
-                  <p className="mb-0 text-muted" style={{ fontSize: '0.85rem' }}>
-                    <strong>Cargo:</strong> {selectedFuncionario.cargo} | <strong>Cédula:</strong> {selectedFuncionario.cedula} | <strong>Teléfono:</strong> {selectedFuncionario.telefono || 'N/A'}
-                  </p>
+            <h5 className="fw-bold text-dark mb-3">Paso 1: Seleccione el Funcionario Solicitante</h5>
+            <p className="text-muted mb-4" style={{ fontSize: '0.9rem' }}>
+              Busque y seleccione el funcionario técnico que retirará las herramientas del inventario.
+            </p>
+            <div className="row g-3">
+              {funcionarios.map((f) => (
+                <div key={f.id} className="col-12 col-md-6 col-lg-4">
+                  <div
+                    onClick={() => setSelectedFuncionario(f)}
+                    className={`p-3 rounded-3 border cursor-pointer transition-all ${
+                      selectedFuncionario?.id === f.id
+                        ? 'border-primary bg-primary-subtle shadow-sm'
+                        : 'bg-white border-light-subtle hover-shadow'
+                    }`}
+                  >
+                    <div className="d-flex align-items-center gap-3">
+                      <div className={`rounded-circle p-2 ${selectedFuncionario?.id === f.id ? 'bg-primary text-white' : 'bg-light text-secondary'}`}>
+                        <UserCheck size={20} />
+                      </div>
+                      <div>
+                        <div className="fw-bold text-dark">{f.nombre} {f.apellido}</div>
+                        <div className="text-muted" style={{ fontSize: '0.8rem' }}>Cédula: {f.cedula}</div>
+                        <div className="text-primary fw-semibold" style={{ fontSize: '0.75rem' }}>{f.cargo}</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
+              ))}
+            </div>
           </div>
         )}
 
@@ -293,9 +291,9 @@ const PrestamoWizardPage = () => {
               className="btn btn-primary d-flex align-items-center gap-2 fw-semibold"
               style={{ background: '#1a5bb8', borderColor: '#1a5bb8' }}
               onClick={() => {
-                if (step === 1 && !selectedFuncionario) return toast.warning('Seleccione un funcionario.');
-                if (step === 2 && selectedHerramientas.length === 0) return toast.warning('Seleccione una herramienta.');
-                if (step === 3 && !escuelaProyecto) return toast.warning('Indique la escuela o proyecto.');
+                if (step === 1 && !selectedFuncionario) return toast.warning('Debe seleccionar un funcionario responsable del préstamo.');
+                if (step === 2 && selectedHerramientas.length === 0) return toast.warning('Debe seleccionar al menos una herramienta disponible.');
+                if (step === 3 && !escuelaProyecto) return toast.warning('Ingrese el nombre del proyecto o escuela destino.');
                 setStep(step + 1);
               }}
             >

@@ -81,7 +81,7 @@ const HerramientasPage = () => {
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
-      toast.error('La imagen no debe superar los 2MB.');
+      toast.error('La imagen seleccionada no debe superar 2MB.');
       return;
     }
 
@@ -92,12 +92,12 @@ const HerramientasPage = () => {
         const base64Image = reader.result;
         setFormData((prev) => ({ ...prev, foto_url: base64Image }));
         setUploadingImage(false);
-        toast.success('Imagen cargada.');
+        toast.success('Imagen cargada con éxito para la herramienta.');
       };
       reader.readAsDataURL(file);
     } catch (err) {
       console.error(err);
-      toast.error('Error en imagen.');
+      toast.error('Ocurrió un error al procesar la imagen.');
       setUploadingImage(false);
     }
   };
@@ -114,15 +114,15 @@ const HerramientasPage = () => {
     try {
       if (editId) {
         await api.put(`/herramientas/${editId}`, formData);
-        toast.success('Herramienta actualizada.');
+        toast.success('Información de la herramienta actualizada con éxito.');
       } else {
         await api.post('/herramientas', formData);
-        toast.success('Herramienta registrada.');
+        toast.success('Nueva herramienta registrada en el inventario exitosamente.');
       }
       setShowModal(false);
       fetchHerramientas();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Error al guardar.');
+      toast.error('Ocurrió un error al guardar la herramienta.');
     }
   };
 
@@ -136,11 +136,11 @@ const HerramientasPage = () => {
     setDeleting(true);
     try {
       await api.delete(`/herramientas/${deleteId}`);
-      toast.success('Herramienta eliminada.');
+      toast.success('Herramienta eliminada del inventario con éxito.');
       setShowDeleteModal(false);
       fetchHerramientas();
     } catch (err) {
-      toast.error('Error al eliminar.');
+      toast.error('Ocurrió un error al eliminar la herramienta.');
     } finally {
       setDeleting(false);
     }

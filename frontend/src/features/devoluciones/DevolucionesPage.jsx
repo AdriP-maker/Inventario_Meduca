@@ -54,12 +54,12 @@ const DevolucionesPage = () => {
       });
 
       if (res.data.success) {
-        toast.success('Devolución registrada.');
+        toast.success('Devolución de herramientas registrada con éxito.');
         setSelectedPrestamo(null);
         fetchPrestamos();
       }
     } catch (err) {
-      toast.error('Error al registrar.');
+      toast.error('Ocurrió un error al registrar la devolución.');
     } finally {
       setSubmitting(false);
     }

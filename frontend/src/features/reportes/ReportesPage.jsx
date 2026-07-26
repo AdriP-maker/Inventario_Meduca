@@ -42,7 +42,7 @@ const ReportesPage = () => {
       }
     } catch (err) {
       console.error(err);
-      toast.error('Error al generar el reporte.');
+      toast.error('Ocurrió un error al generar el reporte.');
     } finally {
       setLoading(false);
     }
@@ -74,7 +74,7 @@ const ReportesPage = () => {
 
   // Export Native Styled .XLSX Excel File with Embedded Logo & Cell Formatting (ExcelJS)
   const handleExportExcel = async () => {
-    toast.info('Generando Excel...');
+    toast.info('Generando archivo de hoja de cálculo Excel...');
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Informe_MEDUCA');
@@ -277,20 +277,20 @@ const ReportesPage = () => {
       a.click();
       window.URL.revokeObjectURL(url);
 
-      toast.success('Excel descargado.');
+      toast.success('Archivo Excel exportado y descargado con éxito.');
     } catch (err) {
       console.error(err);
-      toast.error('Error al exportar Excel.');
+      toast.error('Ocurrió un error al exportar a Excel.');
     }
   };
 
   // Export PDF with Clean Table Row Pagebreaks & Preloaded Logo Image Guarantee
   const handleExportPDF = async () => {
-    toast.info('Generando PDF...');
+    toast.info('Generando documento de informe en formato PDF...');
     const element = document.getElementById('reporte-export-area');
 
     if (!element) {
-      toast.error('Área no encontrada.');
+      toast.error('No se encontró el área para exportación.');
       return;
     }
 
@@ -323,10 +323,10 @@ const ReportesPage = () => {
       };
 
       await html2pdf().set(opt).from(element).save();
-      toast.success('PDF descargado.');
+      toast.success('Documento PDF exportado y descargado con éxito.');
     } catch (err) {
       console.error(err);
-      toast.error('Error al generar PDF.');
+      toast.error('Ocurrió un error al generar el PDF.');
     }
   };
 
