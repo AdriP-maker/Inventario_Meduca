@@ -524,7 +524,7 @@ const ReportesPage = () => {
         className={vistaMode === 'pdf' ? "d-flex justify-content-center" : "position-absolute opacity-0 pointer-events-none"}
         style={vistaMode === 'pdf' ? {} : { left: '-9999px', top: '0', zIndex: -1000 }}
       >
-        <div id="reporte-export-area" className="p-4 bg-white rounded shadow-sm border w-100" style={{ maxWidth: '960px' }}>
+        <div id="reporte-export-area" className="p-3.5 pt-2.5 bg-white rounded shadow-sm border w-100" style={{ maxWidth: '960px' }}>
             {/* Style Injection for PDF Pagebreak Safety */}
             <style>{`
               #reporte-export-area table tr {
@@ -538,7 +538,7 @@ const ReportesPage = () => {
             `}</style>
 
             {/* Header Banner Compacto */}
-            <div className="text-center border-bottom pb-3 mb-3">
+            <div className="text-center border-bottom pb-2.5 mb-2.5">
               <div className="d-flex justify-content-between align-items-center mb-2" style={{ fontSize: '0.75rem' }}>
                 <span className="text-muted fw-semibold">
                   MINISTERIO DE EDUCACIÓN - MEDUCA COCLÉ
@@ -685,13 +685,16 @@ const ReportesPage = () => {
                         </tr>
                       ))
                     )}
-                    <tr className="table-secondary fw-bold" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', fontSize: '0.8rem' }}>
-                      <td colSpan="2" className="py-1.5 px-2.5">TOTAL REGISTROS ANALIZADOS</td>
-                      <td colSpan="2" className="py-1.5 px-2.5">{totalRegistros} Métricas Evaluadas</td>
-                      <td className="py-1.5 px-2.5"><span className="badge-status badge-verde" style={{ padding: '3px 8px', fontSize: '0.7rem' }}>[PROCESADO]</span></td>
-                    </tr>
                   </tbody>
                 </table>
+              </div>
+              <div className="d-flex justify-content-between align-items-center mt-2 px-1 text-muted" style={{ fontSize: '0.775rem' }}>
+                <span className="fw-semibold text-secondary">
+                  Total de Registros Evaluados: <strong className="text-dark">{totalRegistros}</strong>
+                </span>
+                <span className="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                  ✓ Informe Verificado y Procesado
+                </span>
               </div>
             </div>
 
