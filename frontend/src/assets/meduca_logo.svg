@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="meducaBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a2540" />
+      <stop offset="100%" stop-color="#1a5bb8" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+  </defs>
+
+  <!-- Circular Outer Shield -->
+  <circle cx="250" cy="250" r="230" fill="url(#meducaBlue)" stroke="#ffffff" stroke-width="8"/>
+  <circle cx="250" cy="250" r="210" fill="none" stroke="url(#goldGrad)" stroke-width="6"/>
+
+  <!-- Top Stars (República de Panamá) -->
+  <g fill="#f59e0b">
+    <path d="M 250 55 L 255 70 L 270 70 L 258 80 L 262 95 L 250 85 L 238 95 L 242 80 L 230 70 L 245 70 Z" />
+    <path d="M 190 70 L 194 82 L 206 82 L 196 90 L 200 102 L 190 94 L 180 102 L 184 90 L 174 82 L 186 82 Z" />
+    <path d="M 310 70 L 314 82 L 326 82 L 316 90 L 320 102 L 310 94 L 300 102 L 304 90 L 294 82 L 306 82 Z" />
+  </g>
+
+  <!-- Open Book (Educación) -->
+  <path d="M 150 250 Q 250 210 250 260 Q 250 210 350 250 L 350 340 Q 250 300 250 340 Q 250 300 150 340 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="3"/>
+  <path d="M 250 260 L 250 340" stroke="#0a2540" stroke-width="4"/>
+
+  <!-- Torch of Wisdom / Sun -->
+  <circle cx="250" cy="180" r="28" fill="url(#goldGrad)"/>
+  <path d="M 250 140 L 250 125 M 215 155 L 200 145 M 285 155 L 300 145 M 215 205 L 200 215 M 285 205 L 300 215" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Wrench & Gear Overlay for Maintenance -->
+  <path d="M 225 365 L 275 365 L 265 410 L 235 410 Z" fill="url(#goldGrad)"/>
+  <path d="M 220 280 C 220 270 230 260 240 260 C 245 260 250 263 253 267 L 275 245 C 280 240 290 240 295 245 C 300 250 300 260 295 265 L 273 287 C 277 290 280 295 280 300 C 280 310 270 320 260 320 L 220 280 Z" fill="#1a5bb8" opacity="0.9"/>
+
+  <!-- Curved Text: MINISTERIO DE EDUCACIÓN -->
+  <path id="textArcTop" d="M 80 250 A 170 170 0 0 1 420 250" fill="none"/>
+  <text fill="#ffffff" font-family="Public Sans, Arial, sans-serif" font-size="22" font-weight="bold" letter-spacing="2">
+    <textPath href="#textArcTop" startOffset="50%" text-anchor="middle">
+      MINISTERIO DE EDUCACIÓN
+    </textPath>
+  </text>
+
+  <!-- Curved Text: REPÚBLICA DE PANAMÁ -->
+  <path id="textArcBottom" d="M 420 250 A 170 170 0 0 1 80 250" fill="none"/>
+  <text fill="#f59e0b" font-family="Public Sans, Arial, sans-serif" font-size="20" font-weight="bold" letter-spacing="3">
+    <textPath href="#textArcBottom" startOffset="50%" text-anchor="middle">
+      REPÚBLICA DE PANAMÁ
+    </textPath>
+  </text>
+</svg>

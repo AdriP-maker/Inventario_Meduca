@@ -1,0 +1,366 @@
+/* MEDUCA Coclé - Sistema de Inventario Theme Styles (Inspired by Sneat Bootstrap Template) */
+
+:root {
+  --sidebar-bg: #0c2340;
+  --sidebar-hover: #16365c;
+  --sidebar-active: #1a5bb8;
+  --sidebar-text: #b0c4de;
+  --sidebar-active-text: #ffffff;
+  
+  --primary-blue: #1a5bb8;
+  --primary-hover: #144996;
+  --accent-gold: #f39c12;
+
+  --bg-main: #f4f6f9;
+  --card-bg: #ffffff;
+  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+  --font-main: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-main);
+  color: #333333;
+  margin: 0;
+  padding: 0;
+}
+
+/* App Layout Wrapper */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Sidebar Styles */
+.app-sidebar {
+  width: 260px;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+}
+
+.sidebar-header {
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand-title {
+  color: #ffffff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.brand-subtitle {
+  font-size: 0.75rem;
+  color: #8da4c4;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav {
+  padding: 1rem 0.75rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.nav-item-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.75rem 1rem;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 0.925rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.nav-item-link:hover {
+  background: var(--sidebar-hover);
+  color: #ffffff;
+}
+
+.nav-item-link.active {
+  background: var(--sidebar-active);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(26, 91, 184, 0.3);
+  font-weight: 600;
+}
+
+.nav-item-icon {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.user-connected-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+.user-connected-label {
+  font-size: 0.725rem;
+  color: #8da4c4;
+}
+
+.user-connected-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.user-connected-role {
+  font-size: 0.775rem;
+  color: #b0c4de;
+}
+
+.btn-logout {
+  width: 100%;
+  border: 1px solid #dc3545;
+  background: rgba(220, 53, 69, 0.1);
+  color: #ff6b6b;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+  background: #dc3545;
+  color: #ffffff;
+}
+
+/* Main Body Area */
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  background: #f4f6f9;
+}
+
+.app-navbar {
+  background: #ffffff;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.nav-page-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.nav-breadcrumbs {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.app-content {
+  padding: 2rem;
+  flex: 1;
+}
+
+/* Stat Cards */
+.stat-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  box-shadow: var(--card-shadow);
+  border: 1px solid #edf2f7;
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+.stat-icon-blue { background: #e3f2fd; color: #1976d2; }
+.stat-icon-amber { background: #fff8e1; color: #f57f17; }
+.stat-icon-green { background: #e8f5e9; color: #2e7d32; }
+.stat-icon-purple { background: #f3e5f5; color: #7b1fa2; }
+
+.stat-value {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+/* Semáforo de Colores - Badges Unificados */
+.badge-status {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.775rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.3px;
+}
+
+/* Verde: Disponible, Devuelto, Activo, Login, Devolución */
+.badge-disponible, .badge-verde {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+/* Amarillo / Ámbar: Prestado, Próximo a vencer, Préstamo */
+.badge-prestado, .badge-amarillo {
+  background: #fef9c3;
+  color: #a16207;
+  border: 1px solid #fef08a;
+}
+
+/* Naranja: Mantenimiento, Edición */
+.badge-mantenimiento, .badge-naranja {
+  background: #ffedd5;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+/* Rojo: Dañado, Vencido, Eliminación, Inactivo */
+.badge-danado, .badge-rojo {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+/* Azul: Azul neutro o Informativo */
+.badge-devuelto, .badge-azul {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+/* Custom Tables */
+.table-custom {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table-custom th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.825rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.table-custom td {
+  padding: 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+}
+
+.table-custom tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Login Page Styling */
+.login-container {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  background: #0c2340;
+}
+
+.login-banner {
+  flex: 1.2;
+  background: linear-gradient(135deg, #0c2340 0%, #1a5bb8 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem;
+  color: #ffffff;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-banner-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.login-banner-subtitle {
+  font-size: 1.1rem;
+  color: #93c5fd;
+  max-width: 480px;
+}
+
+.login-form-wrapper {
+  flex: 1;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem;
+  max-width: 540px;
+}
