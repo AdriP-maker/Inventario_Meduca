@@ -4,6 +4,7 @@ import Layout from '../../components/Layout';
 import api from '../../services/api';
 import { ToastContext } from '../../context/ToastContext';
 import { UserCheck, Wrench, Calendar, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react';
+import { validators } from '../../utils/validators';
 
 const PrestamoWizardPage = () => {
   const { toast } = useContext(ToastContext);
@@ -39,8 +40,14 @@ const PrestamoWizardPage = () => {
   };
 
   const handleFinish = async () => {
-    if (!selectedFuncionario || selectedHerramientas.length === 0 || !escuelaProyecto) {
-      toast.warning('Complete todos los datos.');
+    const err = validators.validatePrestamo({
+      funcionario_id: selectedFuncionario?.id,
+      herramienta_ids: selectedHerramientas,
+      escuela_proyecto: escuelaProyecto,
+      fecha_devolucion_estimada: fechaDevolucion
+    });
+    if (err) {
+      toast.warning(err);
       return;
     }
 

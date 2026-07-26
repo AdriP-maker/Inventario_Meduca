@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient.js';
+import { validators } from '../utils/validators.js';
 
 // Serverless Supabase API Service replacing legacy PHP backend
 export const supabaseApi = {
@@ -15,20 +16,18 @@ export const supabaseApi = {
       throw { response: { data: { message: 'Usuario o contraseña incorrectos.' } } };
     }
 
-    const user = users[0];
-    const mockToken = `sb-token-${user.id}-${Date.now()}`;
+    const u = users[0];
     return {
       data: {
         success: true,
-        message: 'Login exitoso',
         data: {
-          token: mockToken,
+          token: 'supabase-jwt-session-token',
           user: {
-            id: user.id,
-            nombre: user.nombre,
-            usuario: user.usuario,
-            email: user.email,
-            rol: user.rol
+            id: u.id,
+            usuario: u.usuario,
+            nombre: u.nombre,
+            email: u.email,
+            rol: u.rol
           }
         }
       }
@@ -142,6 +141,9 @@ export const supabaseApi = {
   },
 
   async createFuncionario(formData) {
+    const valErr = validators.validateFuncionario(formData);
+    if (valErr) throw { response: { data: { message: valErr } } };
+
     const { data, error } = await supabase
       .from('funcionarios')
       .insert([formData])
@@ -152,6 +154,9 @@ export const supabaseApi = {
   },
 
   async updateFuncionario(id, formData) {
+    const valErr = validators.validateFuncionario(formData);
+    if (valErr) throw { response: { data: { message: valErr } } };
+
     const { data, error } = await supabase
       .from('funcionarios')
       .update(formData)
@@ -189,6 +194,9 @@ export const supabaseApi = {
   },
 
   async createHerramienta(formData) {
+    const valErr = validators.validateHerramienta(formData);
+    if (valErr) throw { response: { data: { message: valErr } } };
+
     const { data, error } = await supabase
       .from('herramientas')
       .insert([formData])
@@ -199,6 +207,9 @@ export const supabaseApi = {
   },
 
   async updateHerramienta(id, formData) {
+    const valErr = validators.validateHerramienta(formData);
+    if (valErr) throw { response: { data: { message: valErr } } };
+
     const { data, error } = await supabase
       .from('herramientas')
       .update(formData)

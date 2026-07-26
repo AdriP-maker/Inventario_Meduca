@@ -105,14 +105,11 @@ const HerramientasPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const codigoErr = validators.validateText(formData.codigo, 'Código', 2, 30);
-    if (codigoErr) { toast.error(codigoErr); return; }
-
-    const nombreErr = validators.validateText(formData.nombre, 'Nombre', 2, 60);
-    if (nombreErr) { toast.error(nombreErr); return; }
-
-    const marcaErr = validators.validateText(formData.marca, 'Marca', 2, 40);
-    if (marcaErr) { toast.error(marcaErr); return; }
+    const err = validators.validateHerramienta(formData);
+    if (err) {
+      toast.error(err);
+      return;
+    }
 
     try {
       if (editId) {
@@ -404,7 +401,7 @@ const HerramientasPage = () => {
                                 type="file"
                                 accept="image/*"
                                 className="d-none"
-                                onChange={handleFileChange}
+                                onChange={handleImageUpload}
                                 disabled={uploadingImage}
                               />
                             </label>

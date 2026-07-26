@@ -36,6 +36,18 @@ class FuncionarioController {
             Response::error('La cédula, nombre, apellido y cargo son obligatorios.', 400);
         }
 
+        if (strlen($cedula) < 5 || strlen($cedula) > 15) {
+            Response::error('La cédula debe tener entre 5 y 15 caracteres.', 400);
+        }
+
+        if (strlen($nombre) < 2 || strlen($nombre) > 40 || strlen($apellido) < 2 || strlen($apellido) > 40) {
+            Response::error('El nombre y apellido deben tener entre 2 y 40 caracteres.', 400);
+        }
+
+        if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Response::error('El correo electrónico no tiene un formato válido.', 400);
+        }
+
         // Check if cedula already exists
         $exists = Database::fetch("SELECT id FROM funcionarios WHERE cedula = :cedula", ['cedula' => $cedula]);
         if ($exists) {

@@ -71,24 +71,11 @@ const FuncionariosPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Strict Input Validation
-    const cedulaErr = validators.validateCedula(formData.cedula);
-    if (cedulaErr) { toast.error(cedulaErr); return; }
-
-    const nombreErr = validators.validateName(formData.nombre, 'Nombre');
-    if (nombreErr) { toast.error(nombreErr); return; }
-
-    const apellidoErr = validators.validateName(formData.apellido, 'Apellido');
-    if (apellidoErr) { toast.error(apellidoErr); return; }
-
-    const cargoErr = validators.validateText(formData.cargo, 'Cargo', 2, 50);
-    if (cargoErr) { toast.error(cargoErr); return; }
-
-    const phoneErr = validators.validatePhone(formData.telefono);
-    if (phoneErr) { toast.error(phoneErr); return; }
-
-    const emailErr = validators.validateEmail(formData.email);
-    if (emailErr) { toast.error(emailErr); return; }
+    const err = validators.validateFuncionario(formData);
+    if (err) {
+      toast.error(err);
+      return;
+    }
 
     try {
       if (editId) {
