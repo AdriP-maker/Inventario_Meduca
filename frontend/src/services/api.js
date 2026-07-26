@@ -128,6 +128,9 @@ async function routeSupabase(method, url, data) {
     const tipo = match ? match[1] : 'prestamos';
     return await supabaseApi.getReporte(tipo);
   }
+  if (url.startsWith('/historial')) {
+    return await supabaseApi.getHistorial();
+  }
   if (url === '/configuracion') {
     if (method === 'GET') return await supabaseApi.getConfiguracion();
     if (method === 'POST') return await supabaseApi.saveConfiguracion(data);

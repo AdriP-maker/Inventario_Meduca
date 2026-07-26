@@ -340,6 +340,17 @@ export const supabaseApi = {
     return { data: { success: true, data: { registros } } };
   },
 
+  // Historial
+  async getHistorial() {
+    const { data, error } = await supabase
+      .from('historial_actividades')
+      .select('*')
+      .order('fecha', { ascending: false });
+
+    if (error) throw error;
+    return { data: { success: true, data: data || [] } };
+  },
+
   // Configuracion
   async getConfiguracion() {
     const { data } = await supabase.from('configuracion').select('*');
