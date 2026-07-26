@@ -130,12 +130,12 @@ export const supabaseApi = {
   },
 
   // Funcionarios
-  async getFuncionarios() {
-    const { data, error } = await supabase
-      .from('funcionarios')
-      .select('*')
-      .order('id', { ascending: false });
-
+  async getFuncionarios(search = '') {
+    let query = supabase.from('funcionarios').select('*').order('id', { ascending: false });
+    if (search) {
+      query = query.or(`nombre.ilike.%${search}%,apellido.ilike.%${search}%,cedula.ilike.%${search}%,cargo.ilike.%${search}%`);
+    }
+    const { data, error } = await query;
     if (error) throw error;
     return { data: { success: true, data: data || [] } };
   },
@@ -172,9 +172,12 @@ export const supabaseApi = {
   },
 
   // Herramientas
-  async getHerramientas(estado = null) {
+  async getHerramientas(search = '', estado = null) {
     let query = supabase.from('herramientas').select('*').order('id', { ascending: false });
     if (estado) query = query.eq('estado', estado);
+    if (search) {
+      query = query.or(`nombre.ilike.%${search}%,codigo.ilike.%${search}%,marca.ilike.%${search}%,modelo.ilike.%${search}%`);
+    }
 
     const { data, error } = await query;
     if (error) throw error;
@@ -213,7 +216,7 @@ export const supabaseApi = {
   },
 
   // Prestamos
-  async getPrestamos(estado = null) {
+  async getPrestamos(search = '', estado = null) {
     let query = supabase
       .from('prestamos')
       .select(`
@@ -228,7 +231,7 @@ export const supabaseApi = {
     const { data, error } = await query;
     if (error) throw error;
 
-    const formatted = (data || []).map(p => ({
+    let formatted = (data || []).map(p => ({
       ...p,
       funcionario_nombre: p.funcionario?.nombre,
       funcionario_apellido: p.funcionario?.apellido,
@@ -236,6 +239,16 @@ export const supabaseApi = {
       registrado_por: 'Carlos Admin',
       herramientas: (p.prestamo_detalles || []).map(d => d.herramienta)
     }));
+
+    if (search) {
+      const q = search.toLowerCase();
+      formatted = formatted.filter(p => 
+        (p.codigo_prestamo && p.codigo_prestamo.toLowerCase().includes(q)) ||
+        (p.funcionario_nombre && p.funcionario_nombre.toLowerCase().includes(q)) ||
+        (p.funcionario_apellido && p.funcionario_apellido.toLowerCase().includes(q)) ||
+        (p.escuela_proyecto && p.escuela_proyecto.toLowerCase().includes(q))
+      );
+    }
 
     return { data: { success: true, data: formatted } };
   },
@@ -341,12 +354,13 @@ export const supabaseApi = {
   },
 
   // Historial
-  async getHistorial() {
-    const { data, error } = await supabase
-      .from('historial_actividades')
-      .select('*')
-      .order('fecha', { ascending: false });
+  async getHistorial(search = '') {
+    let query = supabase.from('historial_actividades').select('*').order('fecha', { ascending: false });
+    if (search) {
+      query = query.or(`usuario_nombre.ilike.%${search}%,accion.ilike.%${search}%,detalle.ilike.%${search}%`);
+    }
 
+    const { data, error } = await query;
     if (error) throw error;
     return { data: { success: true, data: data || [] } };
   },

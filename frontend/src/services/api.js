@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { supabaseApi } from './supabaseApi';
 
-// Use relative /api URL or Supabase fallback
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 const axiosInstance = axios.create({
@@ -11,7 +10,6 @@ const axiosInstance = axios.create({
   },
 });
 
-// Interceptors
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -23,7 +21,6 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Hybrid API Wrapper: Falls back seamlessly to Supabase API when deployed on Vercel or when local XAMPP is offline
 const api = {
   async get(url, config) {
     try {
@@ -82,56 +79,55 @@ const api = {
   }
 };
 
-// Supabase Route Resolver
+// Supabase Route Resolver (Extract query string parameters cleanly)
 async function routeSupabase(method, url, data) {
-  if (url === '/auth/login') {
+  const parts = url.split('?');
+  const cleanUrl = parts[0];
+  const queryString = parts[1] || '';
+  const params = new URLSearchParams(queryString);
+
+  const search = params.get('search') || '';
+  const estado = params.get('estado') || null;
+  const tipo = params.get('tipo') || 'prestamos';
+
+  if (cleanUrl === '/auth/login') {
     return await supabaseApi.login(data.usuario, data.password);
   }
-  if (url === '/dashboard/stats') {
+  if (cleanUrl === '/dashboard/stats') {
     return await supabaseApi.getDashboardStats();
   }
-  if (url === '/funcionarios') {
-    if (method === 'GET') return await supabaseApi.getFuncionarios();
+  if (cleanUrl === '/funcionarios') {
+    if (method === 'GET') return await supabaseApi.getFuncionarios(search);
     if (method === 'POST') return await supabaseApi.createFuncionario(data);
   }
-  if (url.startsWith('/funcionarios/')) {
-    const id = url.split('/')[2];
+  if (cleanUrl.startsWith('/funcionarios/')) {
+    const id = cleanUrl.split('/')[2];
     if (method === 'PUT') return await supabaseApi.updateFuncionario(id, data);
     if (method === 'DELETE') return await supabaseApi.deleteFuncionario(id);
   }
-  if (url.startsWith('/herramientas')) {
-    if (method === 'GET') {
-      const match = url.match(/estado=([^&]+)/);
-      const estado = match ? decodeURIComponent(match[1]) : null;
-      return await supabaseApi.getHerramientas(estado);
-    }
+  if (cleanUrl === '/herramientas') {
+    if (method === 'GET') return await supabaseApi.getHerramientas(search, estado);
     if (method === 'POST') return await supabaseApi.createHerramienta(data);
   }
-  if (url.startsWith('/herramientas/')) {
-    const id = url.split('/')[2];
+  if (cleanUrl.startsWith('/herramientas/')) {
+    const id = cleanUrl.split('/')[2];
     if (method === 'PUT') return await supabaseApi.updateHerramienta(id, data);
     if (method === 'DELETE') return await supabaseApi.deleteHerramienta(id);
   }
-  if (url.startsWith('/prestamos')) {
-    if (method === 'GET') {
-      const match = url.match(/estado=([^&]+)/);
-      const estado = match ? decodeURIComponent(match[1]) : null;
-      return await supabaseApi.getPrestamos(estado);
-    }
+  if (cleanUrl === '/prestamos') {
+    if (method === 'GET') return await supabaseApi.getPrestamos(search, estado);
     if (method === 'POST') return await supabaseApi.createPrestamo(data);
   }
-  if (url === '/devoluciones/registrar') {
+  if (cleanUrl === '/devoluciones/registrar') {
     return await supabaseApi.registrarDevolucion(data);
   }
-  if (url.startsWith('/reportes')) {
-    const match = url.match(/tipo=([^&]+)/);
-    const tipo = match ? match[1] : 'prestamos';
+  if (cleanUrl === '/reportes') {
     return await supabaseApi.getReporte(tipo);
   }
-  if (url.startsWith('/historial')) {
-    return await supabaseApi.getHistorial();
+  if (cleanUrl === '/historial') {
+    return await supabaseApi.getHistorial(search);
   }
-  if (url === '/configuracion') {
+  if (cleanUrl === '/configuracion') {
     if (method === 'GET') return await supabaseApi.getConfiguracion();
     if (method === 'POST') return await supabaseApi.saveConfiguracion(data);
   }
