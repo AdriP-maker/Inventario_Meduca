@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient';
+import { supabase } from './supabaseClient.js';
 
 // Serverless Supabase API Service replacing legacy PHP backend
 export const supabaseApi = {
@@ -132,8 +132,9 @@ export const supabaseApi = {
   // Funcionarios
   async getFuncionarios(search = '') {
     let query = supabase.from('funcionarios').select('*').order('id', { ascending: false });
-    if (search) {
-      query = query.or(`nombre.ilike.%${search}%,apellido.ilike.%${search}%,cedula.ilike.%${search}%,cargo.ilike.%${search}%`);
+    if (search && search.trim() !== '') {
+      const q = search.trim();
+      query = query.or(`nombre.ilike.%${q}%,apellido.ilike.%${q}%,cedula.ilike.%${q}%,cargo.ilike.%${q}%`);
     }
     const { data, error } = await query;
     if (error) throw error;
@@ -174,9 +175,12 @@ export const supabaseApi = {
   // Herramientas
   async getHerramientas(search = '', estado = null) {
     let query = supabase.from('herramientas').select('*').order('id', { ascending: false });
-    if (estado) query = query.eq('estado', estado);
-    if (search) {
-      query = query.or(`nombre.ilike.%${search}%,codigo.ilike.%${search}%,marca.ilike.%${search}%,modelo.ilike.%${search}%`);
+    if (estado && estado.trim() !== '') {
+      query = query.eq('estado', estado.trim());
+    }
+    if (search && search.trim() !== '') {
+      const q = search.trim();
+      query = query.or(`nombre.ilike.%${q}%,codigo.ilike.%${q}%,marca.ilike.%${q}%,modelo.ilike.%${q}%`);
     }
 
     const { data, error } = await query;
@@ -226,22 +230,24 @@ export const supabaseApi = {
       `)
       .order('id', { ascending: false });
 
-    if (estado) query = query.eq('estado', estado);
+    if (estado && estado.trim() !== '') {
+      query = query.eq('estado', estado.trim());
+    }
 
     const { data, error } = await query;
     if (error) throw error;
 
     let formatted = (data || []).map(p => ({
       ...p,
-      funcionario_nombre: p.funcionario?.nombre,
-      funcionario_apellido: p.funcionario?.apellido,
-      funcionario_cedula: p.funcionario?.cedula,
+      funcionario_nombre: p.funcionario?.nombre || '',
+      funcionario_apellido: p.funcionario?.apellido || '',
+      funcionario_cedula: p.funcionario?.cedula || '',
       registrado_por: 'Carlos Admin',
-      herramientas: (p.prestamo_detalles || []).map(d => d.herramienta)
+      herramientas: (p.prestamo_detalles || []).map(d => d.herramienta).filter(Boolean)
     }));
 
-    if (search) {
-      const q = search.toLowerCase();
+    if (search && search.trim() !== '') {
+      const q = search.trim().toLowerCase();
       formatted = formatted.filter(p => 
         (p.codigo_prestamo && p.codigo_prestamo.toLowerCase().includes(q)) ||
         (p.funcionario_nombre && p.funcionario_nombre.toLowerCase().includes(q)) ||
@@ -356,8 +362,9 @@ export const supabaseApi = {
   // Historial
   async getHistorial(search = '') {
     let query = supabase.from('historial_actividades').select('*').order('fecha', { ascending: false });
-    if (search) {
-      query = query.or(`usuario_nombre.ilike.%${search}%,accion.ilike.%${search}%,detalle.ilike.%${search}%`);
+    if (search && search.trim() !== '') {
+      const q = search.trim();
+      query = query.or(`usuario_nombre.ilike.%${q}%,accion.ilike.%${q}%,detalle.ilike.%${q}%`);
     }
 
     const { data, error } = await query;
