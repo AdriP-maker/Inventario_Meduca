@@ -79,7 +79,7 @@ const api = {
   }
 };
 
-// Supabase Route Resolver (Complete Endpoint Alignment)
+// Supabase Route Resolver (Complete Endpoint Alignment & Object Shape Guarantee)
 async function routeSupabase(method, url, data) {
   let parts = url.split('?');
   let cleanUrl = parts[0];
@@ -141,7 +141,15 @@ async function routeSupabase(method, url, data) {
     return { data: { success: true, url: data?.image_base64 || '' } };
   }
   if (cleanUrl === '/notificaciones') {
-    return { data: { success: true, data: [] } };
+    return {
+      data: {
+        success: true,
+        data: {
+          total_no_leidas: 0,
+          notificaciones: []
+        }
+      }
+    };
   }
 
   // Default fallback
