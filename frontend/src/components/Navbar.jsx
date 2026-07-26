@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
-import { Bell, AlertTriangle, CheckCircle2, Info, ArrowRight, X } from 'lucide-react';
+import { Bell, AlertTriangle, CheckCircle2, Info, ArrowRight } from 'lucide-react';
 
 const Navbar = ({ title, breadcrumbs }) => {
   const { user } = useContext(AuthContext);
@@ -15,9 +15,11 @@ const Navbar = ({ title, breadcrumbs }) => {
   const fetchNotificaciones = async () => {
     try {
       const res = await api.get('/notificaciones');
-      if (res.data.success) {
-        setNotifData(res.data.data);
-        setUnreadCount(res.data.data.total_no_leidas);
+      if (res.data?.success) {
+        const list = Array.isArray(res.data?.data?.notificaciones) ? res.data.data.notificaciones : [];
+        const count = typeof res.data?.data?.total_no_leidas === 'number' ? res.data.data.total_no_leidas : 0;
+        setNotifData({ total_no_leidas: count, notificaciones: list });
+        setUnreadCount(count);
       }
     } catch (err) {
       console.error(err);
@@ -28,7 +30,6 @@ const Navbar = ({ title, breadcrumbs }) => {
     fetchNotificaciones();
   }, []);
 
-  // Close dropdown on click outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -43,6 +44,8 @@ const Navbar = ({ title, breadcrumbs }) => {
     setUnreadCount(0);
   };
 
+  const notificacionesList = Array.isArray(notifData?.notificaciones) ? notifData.notificaciones : [];
+
   return (
     <header className="app-navbar">
       <div>
@@ -54,7 +57,6 @@ const Navbar = ({ title, breadcrumbs }) => {
       </div>
 
       <div className="d-flex align-items-center gap-3">
-        {/* Notification Bell Dropdown Container */}
         <div className="position-relative" ref={dropdownRef}>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
@@ -69,7 +71,6 @@ const Navbar = ({ title, breadcrumbs }) => {
             )}
           </button>
 
-          {/* Floating Dropdown Panel */}
           {showNotifications && (
             <div
               className="card border-0 shadow-lg position-absolute end-0 mt-2 rounded-3"
@@ -95,14 +96,14 @@ const Navbar = ({ title, breadcrumbs }) => {
               </div>
 
               <div className="card-body p-0" style={{ maxHeight: '340px', overflowY: 'auto' }}>
-                {notifData.notificaciones.length === 0 ? (
+                {notificacionesList.length === 0 ? (
                   <div className="p-4 text-center text-muted" style={{ fontSize: '0.875rem' }}>
                     <CheckCircle2 size={32} className="text-success mb-2 opacity-75" />
                     <div>¡Todo al día! No hay notificaciones pendientes.</div>
                   </div>
                 ) : (
                   <div className="list-group list-group-flush">
-                    {notifData.notificaciones.map((item) => (
+                    {notificacionesList.map((item) => (
                       <div
                         key={item.id}
                         className="list-group-item list-group-item-action p-3 border-bottom cursor-pointer"
@@ -152,7 +153,6 @@ const Navbar = ({ title, breadcrumbs }) => {
           )}
         </div>
 
-        {/* User Info Pill */}
         <div className="d-flex align-items-center gap-2 ps-3 border-start">
           <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style={{ width: '40px', height: '40px' }}>
             {user?.nombre?.charAt(0) || 'C'}

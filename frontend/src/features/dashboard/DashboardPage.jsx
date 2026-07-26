@@ -62,7 +62,7 @@ const DashboardPage = () => {
               <Wrench />
             </div>
             <div>
-              <div className="stat-value">{kpis.disponibles}</div>
+              <div className="stat-value">{kpis.disponibles ?? 0}</div>
               <div className="stat-label">Herramientas Disponibles</div>
             </div>
           </div>
@@ -74,7 +74,7 @@ const DashboardPage = () => {
               <ArrowRightLeft />
             </div>
             <div>
-              <div className="stat-value">{kpis.prestamos_activos}</div>
+              <div className="stat-value">{kpis.prestamos_activos ?? 0}</div>
               <div className="stat-label">Préstamos Activos</div>
             </div>
           </div>
@@ -86,7 +86,7 @@ const DashboardPage = () => {
               <CheckCircle2 />
             </div>
             <div>
-              <div className="stat-value">{kpis.herramientas_devueltas}</div>
+              <div className="stat-value">{kpis.herramientas_devueltas ?? 0}</div>
               <div className="stat-label">Herramientas Devueltas</div>
             </div>
           </div>
@@ -98,7 +98,7 @@ const DashboardPage = () => {
               <Users />
             </div>
             <div>
-              <div className="stat-value">{kpis.funcionarios_registrados}</div>
+              <div className="stat-value">{kpis.funcionarios_registrados ?? 0}</div>
               <div className="stat-label">Funcionarios Registrados</div>
             </div>
           </div>
@@ -275,23 +275,23 @@ const DashboardPage = () => {
               <ul className="list-group list-group-flush">
                 <li className="list-group-flush-item p-3 d-flex justify-content-between align-items-center border-bottom">
                   <span className="text-secondary">Total de Herramientas</span>
-                  <span className="fw-bold fs-6 text-primary">{kpis.total_herramientas}</span>
+                  <span className="fw-bold fs-6 text-primary">{kpis.total_herramientas ?? 0}</span>
                 </li>
                 <li className="list-group-flush-item p-3 d-flex justify-content-between align-items-center border-bottom">
                   <span className="text-secondary">Disponibles</span>
-                  <span className="fw-bold fs-6 text-success">{kpis.disponibles}</span>
+                  <span className="fw-bold fs-6 text-success">{kpis.disponibles ?? 0}</span>
                 </li>
                 <li className="list-group-flush-item p-3 d-flex justify-content-between align-items-center border-bottom">
                   <span className="text-secondary">Prestadas</span>
-                  <span className="fw-bold fs-6 text-warning">{kpis.prestamos_activos}</span>
+                  <span className="fw-bold fs-6 text-warning">{kpis.prestamos_activos ?? 0}</span>
                 </li>
                 <li className="list-group-flush-item p-3 d-flex justify-content-between align-items-center border-bottom">
                   <span className="text-secondary">En Mantenimiento</span>
-                  <span className="fw-bold fs-6 text-danger">{kpis.en_mantenimiento}</span>
+                  <span className="fw-bold fs-6 text-danger">{kpis.en_mantenimiento ?? 0}</span>
                 </li>
                 <li className="list-group-flush-item p-3 d-flex justify-content-between align-items-center">
                   <span className="text-secondary">Dañadas</span>
-                  <span className="fw-bold fs-6 text-secondary">{kpis.danadas}</span>
+                  <span className="fw-bold fs-6 text-secondary">{kpis.danadas ?? 0}</span>
                 </li>
               </ul>
             </div>
