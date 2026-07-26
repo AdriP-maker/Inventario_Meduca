@@ -16,7 +16,6 @@ export const supabaseApi = {
     }
 
     const user = users[0];
-    // In production client demo or Supabase Auth
     const mockToken = `sb-token-${user.id}-${Date.now()}`;
     return {
       data: {
@@ -38,43 +37,93 @@ export const supabaseApi = {
 
   // Dashboard Stats
   async getDashboardStats() {
-    const [{ count: funcionariosCount }, { count: totalHerramientas }, { count: prestadasCount }, { count: disponiblesCount }, { count: damagadasCount }] = await Promise.all([
-      supabase.from('funcionarios').select('*', { count: 'exact', head: true }),
+    const [
+      { count: totalHerramientas },
+      { count: disponibles },
+      { count: prestamosActivosCount },
+      { count: devueltasCount },
+      { count: funcionariosCount },
+      { count: mantenimientoCount },
+      { count: danadasCount }
+    ] = await Promise.all([
       supabase.from('herramientas').select('*', { count: 'exact', head: true }),
-      supabase.from('herramientas').select('*', { count: 'exact', head: true }).eq('estado', 'Prestado'),
       supabase.from('herramientas').select('*', { count: 'exact', head: true }).eq('estado', 'Disponible'),
-      supabase.from('herramientas').select('*', { count: 'exact', head: true }).in('estado', ['Dañado', 'Mantenimiento'])
+      supabase.from('prestamos').select('*', { count: 'exact', head: true }).eq('estado', 'Prestado'),
+      supabase.from('prestamos').select('*', { count: 'exact', head: true }).eq('estado', 'Devuelto'),
+      supabase.from('funcionarios').select('*', { count: 'exact', head: true }).eq('estado', 'Activo'),
+      supabase.from('herramientas').select('*', { count: 'exact', head: true }).eq('estado', 'Mantenimiento'),
+      supabase.from('herramientas').select('*', { count: 'exact', head: true }).eq('estado', 'Dañado')
     ]);
 
-    const { data: prestamosRecientes } = await supabase
+    // Active loans (Prestado)
+    const { data: activeLoans } = await supabase
       .from('prestamos')
       .select(`
-        *,
-        funcionario:funcionarios(nombre, apellido, cedula, cargo),
-        prestamo_detalles(herramienta:herramientas(codigo, nombre, marca))
+        id, codigo_prestamo, fecha_prestamo, fecha_devolucion_estimada, escuela_proyecto, estado, observaciones,
+        funcionario:funcionarios(nombre, apellido, cargo),
+        prestamo_detalles(herramienta:herramientas(nombre, foto_url))
       `)
+      .eq('estado', 'Prestado')
       .order('fecha_prestamo', { ascending: false })
+      .limit(10);
+
+    const prestamosActivos = (activeLoans || []).map(p => ({
+      id: p.id,
+      codigo_prestamo: p.codigo_prestamo,
+      fecha_prestamo: p.fecha_prestamo,
+      fecha_devolucion_estimada: p.fecha_devolucion_estimada,
+      escuela_proyecto: p.escuela_proyecto,
+      estado: p.estado,
+      funcionario_nombre: p.funcionario?.nombre || 'Funcionario',
+      funcionario_apellido: p.funcionario?.apellido || '',
+      funcionario_cargo: p.funcionario?.cargo || '',
+      registrado_por: 'Carlos Admin',
+      herramienta_nombre: (p.prestamo_detalles || [])[0]?.herramienta?.nombre || 'Herramienta',
+      herramienta_foto: (p.prestamo_detalles || [])[0]?.herramienta?.foto_url || ''
+    }));
+
+    // Recently returned loans (Devuelto)
+    const { data: returnedLoans } = await supabase
+      .from('prestamos')
+      .select(`
+        id, codigo_prestamo, fecha_prestamo, fecha_devolucion_real, escuela_proyecto, estado, observaciones,
+        funcionario:funcionarios(nombre, apellido, cargo),
+        prestamo_detalles(herramienta:herramientas(nombre, foto_url))
+      `)
+      .eq('estado', 'Devuelto')
+      .order('fecha_devolucion_real', { ascending: false })
       .limit(5);
 
-    const formattedRecientes = (prestamosRecientes || []).map(p => ({
-      ...p,
-      funcionario_nombre: p.funcionario?.nombre,
-      funcionario_apellido: p.funcionario?.apellido,
-      herramientas: (p.prestamo_detalles || []).map(d => d.herramienta)
+    const devueltosRecientemente = (returnedLoans || []).map(p => ({
+      id: p.id,
+      codigo_prestamo: p.codigo_prestamo,
+      fecha_prestamo: p.fecha_prestamo,
+      fecha_devolucion_real: p.fecha_devolucion_real,
+      escuela_proyecto: p.escuela_proyecto,
+      estado: p.estado,
+      funcionario_nombre: p.funcionario?.nombre || 'Funcionario',
+      funcionario_apellido: p.funcionario?.apellido || '',
+      funcionario_cargo: p.funcionario?.cargo || '',
+      registrado_por: 'Carlos Admin',
+      herramienta_nombre: (p.prestamo_detalles || [])[0]?.herramienta?.nombre || 'Herramienta',
+      herramienta_foto: (p.prestamo_detalles || [])[0]?.herramienta?.foto_url || ''
     }));
 
     return {
       data: {
         success: true,
         data: {
-          totales: {
-            funcionarios: funcionariosCount || 0,
+          kpis: {
             total_herramientas: totalHerramientas || 0,
-            herramientas_prestadas: prestadasCount || 0,
-            herramientas_disponibles: disponiblesCount || 0,
-            herramientas_danadas: damagadasCount || 0
+            disponibles: disponibles || 0,
+            prestamos_activos: prestamosActivosCount || 0,
+            herramientas_devueltas: devueltasCount || 0,
+            funcionarios_registrados: funcionariosCount || 0,
+            en_mantenimiento: mantenimientoCount || 0,
+            danadas: danadasCount || 0
           },
-          prestamos_recientes: formattedRecientes
+          prestamos_activos: prestamosActivos,
+          devueltos_recientemente: devueltosRecientemente
         }
       }
     };
@@ -184,6 +233,7 @@ export const supabaseApi = {
       funcionario_nombre: p.funcionario?.nombre,
       funcionario_apellido: p.funcionario?.apellido,
       funcionario_cedula: p.funcionario?.cedula,
+      registrado_por: 'Carlos Admin',
       herramientas: (p.prestamo_detalles || []).map(d => d.herramienta)
     }));
 
@@ -279,7 +329,8 @@ export const supabaseApi = {
         codigo_prestamo: d.prestamo?.codigo_prestamo,
         escuela_proyecto: d.prestamo?.escuela_proyecto,
         funcionario_nombre: d.prestamo?.funcionario?.nombre,
-        funcionario_apellido: d.prestamo?.funcionario?.apellido
+        funcionario_apellido: d.prestamo?.funcionario?.apellido,
+        registrado_por: 'Carlos Admin'
       }));
     } else if (tipo === 'funcionarios') {
       const res = await this.getFuncionarios();
