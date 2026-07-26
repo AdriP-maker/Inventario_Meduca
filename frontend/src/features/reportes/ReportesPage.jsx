@@ -600,8 +600,8 @@ const ReportesPage = () => {
             </div>
 
             {/* Table Detail */}
-            <div className="mb-4">
-              <h6 className="fw-bold text-dark mb-2.5 border-bottom pb-1.5" style={{ fontSize: '0.875rem' }}>Detalle de Análisis de Métricas</h6>
+            <div className="mb-3.5">
+              <h6 className="fw-bold text-dark mb-1.5 mt-2" style={{ fontSize: '0.875rem' }}>Detalle de Análisis de Métricas</h6>
               <div className="table-responsive">
                 <table className="table table-sm table-bordered mb-0" style={{ fontSize: '0.8rem' }}>
                   <thead>
