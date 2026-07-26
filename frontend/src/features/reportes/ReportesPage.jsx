@@ -33,6 +33,46 @@ const ReportesPage = () => {
   // View Switcher State: 'pdf' | 'excel'
   const [vistaMode, setVistaMode] = useState('pdf');
 
+  const renderEstadoBadge = (estado) => {
+    const est = (estado || 'Disponible').toString().trim();
+    let badgeBg = '#e8f5e9';
+    let badgeColor = '#2e7d32';
+    let badgeBorder = '#a5d6a7';
+
+    if (est === 'Prestado' || est === 'Pendiente' || est === 'En Tránsito') {
+      badgeBg = '#fff8e1';
+      badgeColor = '#b78103';
+      badgeBorder = '#ffe082';
+    } else if (est === 'Dañado' || est === 'Con Daño' || est === 'Vencido' || est === 'Inactivo') {
+      badgeBg = '#ffebee';
+      badgeColor = '#c62828';
+      badgeBorder = '#ef9a9a';
+    } else if (est === 'Mantenimiento' || est === 'En Reparación') {
+      badgeBg = '#fff3e0';
+      badgeColor = '#e65100';
+      badgeBorder = '#ffcc80';
+    }
+
+    return (
+      <span
+        style={{
+          backgroundColor: badgeBg,
+          color: badgeColor,
+          borderColor: badgeBorder,
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          padding: '3px 9px',
+          fontSize: '0.725rem',
+          borderRadius: '12px',
+          fontWeight: '700',
+          display: 'inline-block'
+        }}
+      >
+        {est.toUpperCase()}
+      </span>
+    );
+  };
+
   const fetchReporte = async () => {
     setLoading(true);
     try {
@@ -605,12 +645,43 @@ const ReportesPage = () => {
               <div className="table-responsive">
                 <table className="table table-sm table-bordered mb-0" style={{ fontSize: '0.8rem' }}>
                   <thead>
-                    <tr style={{ background: '#0d522c', color: '#ffffff' }}>
-                      <th className="text-white fw-bold py-2 px-2.5">Código / ID</th>
-                      <th className="text-white fw-bold py-2 px-2.5">Categoría / Descripción</th>
-                      <th className="text-white fw-bold py-2 px-2.5">Valor Inicial / Fecha</th>
-                      <th className="text-white fw-bold py-2 px-2.5">Responsable</th>
-                      <th className="text-white fw-bold py-2 px-2.5">Estado / Prioridad</th>
+                    <tr style={{ backgroundColor: '#0d522c', color: '#ffffff' }}>
+                      {tipo === 'prestamos' && (
+                        <>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Código Préstamo</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Funcionario / Proyecto</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Fecha Préstamo</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Registrado Por</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Estado</th>
+                        </>
+                      )}
+                      {tipo === 'herramientas' && (
+                        <>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Código Herramienta</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Nombre / Marca</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Ubicación Bodega</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Responsable</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Estado Inventario</th>
+                        </>
+                      )}
+                      {tipo === 'devoluciones' && (
+                        <>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Código Préstamo</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Funcionario</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Escuela / Proyecto</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Fecha Devolución</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Estado Devolución</th>
+                        </>
+                      )}
+                      {tipo === 'funcionarios' && (
+                        <>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Cédula</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Nombre Completo</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Cargo</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Departamento</th>
+                          <th style={{ backgroundColor: '#0d522c', color: '#ffffff' }} className="fw-bold py-2 px-2.5">Estado Funcionario</th>
+                        </>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -635,9 +706,7 @@ const ReportesPage = () => {
                               <td className="py-1.5 px-2.5">{new Date(row.fecha_prestamo).toLocaleDateString()}</td>
                               <td className="py-1.5 px-2.5">{row.registrado_por || 'Carlos Admin'}</td>
                               <td className="py-1.5 px-2.5">
-                                <span className={`badge-status ${row.estado === 'Devuelto' ? 'badge-verde' : 'badge-amarillo'}`} style={{ padding: '3px 8px', fontSize: '0.7rem' }}>
-                                  {row.estado === 'Devuelto' ? '[NORMAL]' : '[PENDIENTE]'}
-                                </span>
+                                {renderEstadoBadge(row.estado)}
                               </td>
                             </>
                           )}
@@ -652,13 +721,7 @@ const ReportesPage = () => {
                               <td className="py-1.5 px-2.5">{row.ubicacion}</td>
                               <td className="py-1.5 px-2.5">Bodega Mantenimiento</td>
                               <td className="py-1.5 px-2.5">
-                                <span className={`badge-status ${
-                                  row.estado === 'Disponible' ? 'badge-verde' :
-                                  row.estado === 'Prestado' ? 'badge-amarillo' :
-                                  row.estado === 'Mantenimiento' ? 'badge-naranja' : 'badge-rojo'
-                                }`} style={{ padding: '3px 8px', fontSize: '0.7rem' }}>
-                                  {row.estado === 'Disponible' ? '[NORMAL]' : row.estado === 'Prestado' ? '[PENDIENTE]' : '[ALTA PRIORIDAD]'}
-                                </span>
+                                {renderEstadoBadge(row.estado)}
                               </td>
                             </>
                           )}
@@ -669,7 +732,9 @@ const ReportesPage = () => {
                               <td className="py-1.5 px-2.5">{row.funcionario_nombre} {row.funcionario_apellido}</td>
                               <td className="py-1.5 px-2.5">{row.escuela_proyecto}</td>
                               <td className="py-1.5 px-2.5">{new Date(row.fecha_devolucion).toLocaleDateString()}</td>
-                              <td className="py-1.5 px-2.5"><span className="badge-status badge-verde" style={{ padding: '3px 8px', fontSize: '0.7rem' }}>[NORMAL]</span></td>
+                              <td className="py-1.5 px-2.5">
+                                {renderEstadoBadge(row.estado_devolucion || row.estado || 'Devuelto')}
+                              </td>
                             </>
                           )}
 
@@ -679,7 +744,9 @@ const ReportesPage = () => {
                               <td className="py-1.5 px-2.5">{row.nombre} {row.apellido}</td>
                               <td className="py-1.5 px-2.5">{row.cargo}</td>
                               <td className="py-1.5 px-2.5">{row.departamento}</td>
-                              <td className="py-1.5 px-2.5"><span className="badge-status badge-verde" style={{ padding: '3px 8px', fontSize: '0.7rem' }}>[NORMAL]</span></td>
+                              <td className="py-1.5 px-2.5">
+                                {renderEstadoBadge(row.estado || 'Activo')}
+                              </td>
                             </>
                           )}
                         </tr>
