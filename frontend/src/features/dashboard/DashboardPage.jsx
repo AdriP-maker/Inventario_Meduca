@@ -56,8 +56,8 @@ const DashboardPage = () => {
     <Layout title="Dashboard" breadcrumbs="Mantenimiento • Electricidad • Refrigeración">
       {/* 4 KPI Top Cards */}
       <div className="row g-3 mb-4">
-        <div className="col-12 col-sm-6 col-xl-3">
-          <div className="stat-card">
+        <div className="col-12 col-sm-6 col-xl-3 d-flex">
+          <div className="stat-card w-100">
             <div className="stat-icon-wrapper stat-icon-blue">
               <Wrench />
             </div>
@@ -68,8 +68,8 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        <div className="col-12 col-sm-6 col-xl-3">
-          <div className="stat-card">
+        <div className="col-12 col-sm-6 col-xl-3 d-flex">
+          <div className="stat-card w-100">
             <div className="stat-icon-wrapper stat-icon-amber">
               <ArrowRightLeft />
             </div>
@@ -80,8 +80,8 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        <div className="col-12 col-sm-6 col-xl-3">
-          <div className="stat-card">
+        <div className="col-12 col-sm-6 col-xl-3 d-flex">
+          <div className="stat-card w-100">
             <div className="stat-icon-wrapper stat-icon-green">
               <CheckCircle2 />
             </div>
@@ -92,8 +92,8 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        <div className="col-12 col-sm-6 col-xl-3">
-          <div className="stat-card">
+        <div className="col-12 col-sm-6 col-xl-3 d-flex">
+          <div className="stat-card w-100">
             <div className="stat-icon-wrapper stat-icon-purple">
               <Users />
             </div>

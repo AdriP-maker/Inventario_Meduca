@@ -3,6 +3,8 @@ import Layout from '../../components/Layout';
 import api from '../../services/api';
 import { ToastContext } from '../../context/ToastContext';
 import { UserPlus, Search, Edit, Trash2 } from 'lucide-react';
+import { validators } from '../../utils/validators';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const FuncionariosPage = () => {
   const { toast } = useContext(ToastContext);
@@ -10,7 +12,7 @@ const FuncionariosPage = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   
-  // Modal state
+  // Form Modal state
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
   const [formData, setFormData] = useState({
@@ -23,6 +25,11 @@ const FuncionariosPage = () => {
     email: '',
     estado: 'Activo'
   });
+
+  // Delete Confirm Modal State
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchFuncionarios = async () => {
     try {
@@ -63,6 +70,26 @@ const FuncionariosPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Strict Input Validation
+    const cedulaErr = validators.validateCedula(formData.cedula);
+    if (cedulaErr) { toast.error(cedulaErr); return; }
+
+    const nombreErr = validators.validateName(formData.nombre, 'Nombre');
+    if (nombreErr) { toast.error(nombreErr); return; }
+
+    const apellidoErr = validators.validateName(formData.apellido, 'Apellido');
+    if (apellidoErr) { toast.error(apellidoErr); return; }
+
+    const cargoErr = validators.validateText(formData.cargo, 'Cargo', 2, 50);
+    if (cargoErr) { toast.error(cargoErr); return; }
+
+    const phoneErr = validators.validatePhone(formData.telefono);
+    if (phoneErr) { toast.error(phoneErr); return; }
+
+    const emailErr = validators.validateEmail(formData.email);
+    if (emailErr) { toast.error(emailErr); return; }
+
     try {
       if (editId) {
         await api.put(`/funcionarios/${editId}`, formData);
@@ -74,19 +101,27 @@ const FuncionariosPage = () => {
       setShowModal(false);
       fetchFuncionarios();
     } catch (err) {
-      toast.error('Error al guardar.');
+      toast.error(err.response?.data?.message || 'Error al guardar.');
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('¿Está seguro de eliminar este funcionario?')) {
-      try {
-        await api.delete(`/funcionarios/${id}`);
-        toast.success('Funcionario eliminado.');
-        fetchFuncionarios();
-      } catch (err) {
-        toast.error('Error al eliminar.');
-      }
+  const handlePromptDelete = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    setDeleting(true);
+    try {
+      await api.delete(`/funcionarios/${deleteId}`);
+      toast.success('Funcionario eliminado.');
+      setShowDeleteModal(false);
+      fetchFuncionarios();
+    } catch (err) {
+      toast.error('Error al eliminar.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -153,10 +188,10 @@ const FuncionariosPage = () => {
                       </span>
                     </td>
                     <td className="text-center">
-                      <button onClick={() => handleOpenModal(f)} className="btn btn-sm btn-outline-primary p-1 me-1">
+                      <button onClick={() => handleOpenModal(f)} className="btn btn-sm btn-outline-primary p-1 me-1" title="Editar">
                         <Edit size={16} />
                       </button>
-                      <button onClick={() => handleDelete(f.id)} className="btn btn-sm btn-outline-danger p-1">
+                      <button onClick={() => handlePromptDelete(f.id)} className="btn btn-sm btn-outline-danger p-1" title="Eliminar">
                         <Trash2 size={16} />
                       </button>
                     </td>
@@ -172,50 +207,54 @@ const FuncionariosPage = () => {
       {showModal && (
         <div className="modal d-block bg-dark bg-opacity-50" tabIndex="-1">
           <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title fw-bold">
+            <div className="modal-content border-0 shadow-lg rounded-4">
+              <div className="modal-header py-3 border-bottom">
+                <h5 className="modal-title fw-bold text-dark">
                   {editId ? 'Editar Funcionario' : 'Nuevo Funcionario'}
                 </h5>
                 <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
               </div>
               <form onSubmit={handleSubmit}>
-                <div className="modal-body row g-3">
+                <div className="modal-body row g-3 p-4">
                   <div className="col-12 col-md-6">
-                    <label className="form-label fw-semibold">Cédula</label>
+                    <label className="form-label fw-semibold">Cédula *</label>
                     <input
                       type="text"
                       className="form-control"
+                      placeholder="Ej: 2-710-1234"
                       value={formData.cedula}
                       onChange={(e) => setFormData({ ...formData, cedula: e.target.value })}
                       required
                     />
                   </div>
                   <div className="col-12 col-md-6">
-                    <label className="form-label fw-semibold">Nombre</label>
+                    <label className="form-label fw-semibold">Nombre *</label>
                     <input
                       type="text"
                       className="form-control"
+                      placeholder="Ej: Juan"
                       value={formData.nombre}
                       onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                       required
                     />
                   </div>
                   <div className="col-12 col-md-6">
-                    <label className="form-label fw-semibold">Apellido</label>
+                    <label className="form-label fw-semibold">Apellido *</label>
                     <input
                       type="text"
                       className="form-control"
+                      placeholder="Ej: Pérez"
                       value={formData.apellido}
                       onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
                       required
                     />
                   </div>
                   <div className="col-12 col-md-6">
-                    <label className="form-label fw-semibold">Cargo</label>
+                    <label className="form-label fw-semibold">Cargo *</label>
                     <input
                       type="text"
                       className="form-control"
+                      placeholder="Ej: Técnico Electricista"
                       value={formData.cargo}
                       onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
                       required
@@ -226,6 +265,7 @@ const FuncionariosPage = () => {
                     <input
                       type="text"
                       className="form-control"
+                      placeholder="Ej: Mantenimiento General"
                       value={formData.departamento}
                       onChange={(e) => setFormData({ ...formData, departamento: e.target.value })}
                     />
@@ -235,6 +275,7 @@ const FuncionariosPage = () => {
                     <input
                       type="text"
                       className="form-control"
+                      placeholder="Ej: 6501-1122"
                       value={formData.telefono}
                       onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
                     />
@@ -244,20 +285,34 @@ const FuncionariosPage = () => {
                     <input
                       type="email"
                       className="form-control"
+                      placeholder="Ej: juan.perez@meduca.gob.pa"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     />
                   </div>
                 </div>
-                <div className="modal-footer">
-                  <button type="button" className="btn btn-light" onClick={() => setShowModal(false)}>Cancelar</button>
-                  <button type="submit" className="btn btn-primary fw-bold">Guardar</button>
+                <div className="modal-footer py-3 bg-light border-top">
+                  <button type="button" className="btn btn-outline-secondary px-4 fw-semibold" onClick={() => setShowModal(false)}>Cancelar</button>
+                  <button type="submit" className="btn btn-primary px-4 fw-bold" style={{ background: '#1a5bb8', borderColor: '#1a5bb8' }}>Guardar</button>
                 </div>
               </form>
             </div>
           </div>
         </div>
       )}
+
+      {/* Delete Custom Confirmation Modal */}
+      <ConfirmModal
+        show={showDeleteModal}
+        title="Eliminar Funcionario"
+        message="¿Está seguro de que desea eliminar este funcionario? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setShowDeleteModal(false)}
+        submitting={deleting}
+      />
     </Layout>
   );
 };

@@ -4,6 +4,9 @@ import api from '../../services/api';
 import { ToastContext } from '../../context/ToastContext';
 import { Plus, Search, Edit, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
 
+import ConfirmModal from '../../components/ConfirmModal';
+import { validators } from '../../utils/validators';
+
 const HerramientasPage = () => {
   const { toast } = useContext(ToastContext);
   const [herramientas, setHerramientas] = useState([]);
@@ -16,6 +19,11 @@ const HerramientasPage = () => {
   const [editId, setEditId] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [useUrlInput, setUseUrlInput] = useState(false);
+
+  // Delete Modal State
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [formData, setFormData] = useState({
     codigo: '',
@@ -54,50 +62,37 @@ const HerramientasPage = () => {
     } else {
       setEditId(null);
       setFormData({
-        codigo: `HER-0${Math.floor(10 + Math.random() * 90)}`,
+        codigo: '',
         nombre: '',
         marca: '',
         modelo: '',
         numero_serie: '',
         estado: 'Disponible',
         ubicacion: 'Bodega Mantenimiento',
-        foto_url: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=500&auto=format&fit=crop',
+        foto_url: '',
         observaciones: ''
       });
     }
     setShowModal(true);
   };
 
-  // Image Upload File Handler
-  const handleFileChange = async (e) => {
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      toast.warning('Seleccione una imagen válida.');
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('La imagen no debe superar los 2MB.');
       return;
     }
 
     setUploadingImage(true);
-
     try {
       const reader = new FileReader();
-      reader.onloadend = async () => {
+      reader.onloadend = () => {
         const base64Image = reader.result;
-        
-        try {
-          const res = await api.post('/upload', { image_base64: base64Image });
-          if (res.data.success && res.data.data.url) {
-            setFormData(prev => ({ ...prev, foto_url: res.data.data.url }));
-            toast.success('Imagen subida.');
-          } else {
-            setFormData(prev => ({ ...prev, foto_url: base64Image }));
-          }
-        } catch (uploadErr) {
-          setFormData(prev => ({ ...prev, foto_url: base64Image }));
-        } finally {
-          setUploadingImage(false);
-        }
+        setFormData((prev) => ({ ...prev, foto_url: base64Image }));
+        setUploadingImage(false);
+        toast.success('Imagen cargada.');
       };
       reader.readAsDataURL(file);
     } catch (err) {
@@ -109,6 +104,16 @@ const HerramientasPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const codigoErr = validators.validateText(formData.codigo, 'Código', 2, 30);
+    if (codigoErr) { toast.error(codigoErr); return; }
+
+    const nombreErr = validators.validateText(formData.nombre, 'Nombre', 2, 60);
+    if (nombreErr) { toast.error(nombreErr); return; }
+
+    const marcaErr = validators.validateText(formData.marca, 'Marca', 2, 40);
+    if (marcaErr) { toast.error(marcaErr); return; }
+
     try {
       if (editId) {
         await api.put(`/herramientas/${editId}`, formData);
@@ -120,19 +125,27 @@ const HerramientasPage = () => {
       setShowModal(false);
       fetchHerramientas();
     } catch (err) {
-      toast.error('Error al guardar.');
+      toast.error(err.response?.data?.message || 'Error al guardar.');
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('¿Está seguro de eliminar esta herramienta del inventario?')) {
-      try {
-        await api.delete(`/herramientas/${id}`);
-        toast.success('Herramienta eliminada.');
-        fetchHerramientas();
-      } catch (err) {
-        toast.error('Error al eliminar.');
-      }
+  const handlePromptDelete = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    setDeleting(true);
+    try {
+      await api.delete(`/herramientas/${deleteId}`);
+      toast.success('Herramienta eliminada.');
+      setShowDeleteModal(false);
+      fetchHerramientas();
+    } catch (err) {
+      toast.error('Error al eliminar.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -237,7 +250,7 @@ const HerramientasPage = () => {
                       <button onClick={() => handleOpenModal(h)} className="btn btn-sm btn-outline-primary p-1 me-1" title="Editar">
                         <Edit size={16} />
                       </button>
-                      <button onClick={() => handleDelete(h.id)} className="btn btn-sm btn-outline-danger p-1" title="Eliminar">
+                      <button onClick={() => handlePromptDelete(h.id)} className="btn btn-sm btn-outline-danger p-1" title="Eliminar">
                         <Trash2 size={16} />
                       </button>
                     </td>
@@ -425,6 +438,19 @@ const HerramientasPage = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Custom Confirmation Modal */}
+      <ConfirmModal
+        show={showDeleteModal}
+        title="Eliminar Herramienta"
+        message="¿Está seguro de que desea eliminar esta herramienta del inventario? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setShowDeleteModal(false)}
+        submitting={deleting}
+      />
     </Layout>
   );
 };

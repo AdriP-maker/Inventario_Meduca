@@ -3,7 +3,7 @@ import Layout from '../../components/Layout';
 import api from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import { ToastContext } from '../../context/ToastContext';
-import { Settings, Lock, Save, KeyRound } from 'lucide-react';
+import { Settings, Lock, Save, KeyRound, Eye, EyeOff } from 'lucide-react';
 
 const ConfiguracionPage = () => {
   const { user } = useContext(AuthContext);
@@ -18,6 +18,8 @@ const ConfiguracionPage = () => {
 
   const [nuevaPassword, setNuevaPassword] = useState('');
   const [confirmarPassword, setConfirmarPassword] = useState('');
+  const [showNuevaPass, setShowNuevaPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   useEffect(() => {
     api.get('/configuracion').then((res) => {
@@ -47,6 +49,14 @@ const ConfiguracionPage = () => {
 
   const handleCambiarPassword = async (e) => {
     e.preventDefault();
+    if (nuevaPassword.length < 6) {
+      toast.error('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+    if (nuevaPassword !== confirmarPassword) {
+      toast.error('Las contraseñas no coinciden.');
+      return;
+    }
     try {
       const res = await api.post('/configuracion/cambiar-password', {
         nueva_password: nuevaPassword,
@@ -148,26 +158,48 @@ const ConfiguracionPage = () => {
               <form onSubmit={handleCambiarPassword}>
                 <div className="mb-3">
                   <label className="form-label fw-semibold">Nueva Contraseña</label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    placeholder="Mínimo 6 caracteres"
-                    value={nuevaPassword}
-                    onChange={(e) => setNuevaPassword(e.target.value)}
-                    required
-                  />
+                  <div className="input-group">
+                    <input
+                      type={showNuevaPass ? 'text' : 'password'}
+                      className="form-control"
+                      placeholder="Mínimo 6 caracteres"
+                      value={nuevaPassword}
+                      onChange={(e) => setNuevaPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary"
+                      onClick={() => setShowNuevaPass(!showNuevaPass)}
+                      title={showNuevaPass ? 'Ocultar' : 'Mostrar'}
+                      tabIndex="-1"
+                    >
+                      {showNuevaPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="mb-4">
                   <label className="form-label fw-semibold">Confirmar Nueva Contraseña</label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    placeholder="Repita la nueva contraseña"
-                    value={confirmarPassword}
-                    onChange={(e) => setConfirmarPassword(e.target.value)}
-                    required
-                  />
+                  <div className="input-group">
+                    <input
+                      type={showConfirmPass ? 'text' : 'password'}
+                      className="form-control"
+                      placeholder="Repita la nueva contraseña"
+                      value={confirmarPassword}
+                      onChange={(e) => setConfirmarPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary"
+                      onClick={() => setShowConfirmPass(!showConfirmPass)}
+                      title={showConfirmPass ? 'Ocultar' : 'Mostrar'}
+                      tabIndex="-1"
+                    >
+                      {showConfirmPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
 
                 <button type="submit" className="btn btn-success fw-bold d-flex align-items-center gap-2">

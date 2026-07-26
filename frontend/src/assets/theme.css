@@ -209,6 +209,8 @@ body {
   box-shadow: var(--card-shadow);
   border: 1px solid #edf2f7;
   transition: transform 0.2s ease;
+  height: 100%;
+  min-height: 105px;
 }
 
 .stat-card:hover {

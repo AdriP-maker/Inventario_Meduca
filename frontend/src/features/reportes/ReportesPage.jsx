@@ -245,6 +245,28 @@ const ReportesPage = () => {
         { width: 45 },
         { width: 22 }
       ];
+      // Lock all cells & protect worksheet against editing in Microsoft Excel
+      worksheet.eachRow({ includeEmpty: true }, (row) => {
+        row.eachCell({ includeEmpty: true }, (cell) => {
+          cell.protection = { locked: true };
+        });
+      });
+
+      await worksheet.protect('Meduca2025!', {
+        selectLockedCells: true,
+        selectUnlockedCells: false,
+        formatCells: false,
+        formatColumns: false,
+        formatRows: false,
+        insertColumns: false,
+        insertRows: false,
+        insertHyperlinks: false,
+        deleteColumns: false,
+        deleteRows: false,
+        sort: false,
+        autoFilter: false,
+        pivotTables: false
+      });
 
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
