@@ -8,11 +8,18 @@ const DisponibilidadModal = ({ show, onClose, data, loading }) => {
   const prestamosActivos = data?.prestamos_activos || [];
   const notasDano = data?.notas_dano || [];
 
-  const stockTotal = (int) => parseInt(int || 0, 10);
-  const total = stockTotal(h.stock_total || 1);
-  const disponible = stockTotal(h.stock_disponible);
-  const prestado = stockTotal(h.stock_prestado);
-  const danado = stockTotal(h.stock_danado);
+  const parseVal = (val, defaultVal = 0) => {
+    if (val === null || val === undefined) return defaultVal;
+    return parseInt(val, 10);
+  };
+
+  const cantPrestadaCalc = prestamosActivos.reduce((acc, p) => acc + parseInt(p.cantidad || 1, 10), 0);
+  const cantDanadaCalc = notasDano.reduce((acc, n) => acc + parseInt(n.cantidad || 1, 10), 0);
+
+  const total = parseVal(h.stock_total, 1);
+  const prestado = parseVal(h.stock_prestado, cantPrestadaCalc > 0 ? cantPrestadaCalc : (h.estado === 'Prestado' ? 1 : 0));
+  const danado = parseVal(h.stock_danado, cantDanadaCalc > 0 ? cantDanadaCalc : (h.estado === 'Dañado' ? 1 : 0));
+  const disponible = parseVal(h.stock_disponible, Math.max(0, total - prestado - danado));
 
   const esSinStock = disponible <= 0;
 

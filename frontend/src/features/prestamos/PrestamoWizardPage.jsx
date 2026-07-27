@@ -18,16 +18,29 @@ const PrestamoWizardPage = () => {
     new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   );
   const [observaciones, setObservaciones] = useState('');
+  const [loadingData, setLoadingData] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.get('/funcionarios').then((res) => {
-      if (res.data.success) setFuncionarios(res.data.data);
-    });
-
-    api.get('/herramientas?estado=Disponible').then((res) => {
-      if (res.data.success) setHerramientas(res.data.data);
+    setLoadingData(true);
+    Promise.all([
+      api.get('/funcionarios'),
+      api.get('/herramientas?estado=Disponible')
+    ]).then(([resFunc, resHerr]) => {
+      if (resFunc.data.success) setFuncionarios(resFunc.data.data);
+      if (resHerr.data.success) {
+        const dispList = (resHerr.data.data || []).filter(h => {
+          const stockDisp = parseInt(h.stock_disponible ?? (h.estado === 'Disponible' ? 1 : 0), 10);
+          return stockDisp > 0;
+        });
+        setHerramientas(dispList);
+      }
+    }).catch(err => {
+      console.error(err);
+      toast.error('Ocurrió un error al cargar datos para el préstamo.');
+    }).finally(() => {
+      setLoadingData(false);
     });
   }, []);
 
@@ -93,6 +106,18 @@ const PrestamoWizardPage = () => {
       setSubmitting(false);
     }
   };
+
+  if (loadingData) {
+    return (
+      <Layout title="Nuevo Préstamo de Herramientas" breadcrumbs="Cargando catálogo...">
+        <div className="card border-0 shadow-sm p-5 text-center my-4">
+          <div className="spinner-border text-primary mx-auto mb-3" role="status" style={{ width: '3rem', height: '3rem' }}></div>
+          <h5 className="fw-bold text-dark mb-1">Cargando Datos de Inventario</h5>
+          <p className="text-muted mb-0">Consultando funcionarios y catálogo de productos disponibles...</p>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout title="Nuevo Préstamo de Herramientas" breadcrumbs="Registrar un nuevo préstamo">

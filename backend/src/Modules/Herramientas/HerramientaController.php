@@ -21,7 +21,9 @@ class HerramientaController {
 
         if ($estado && in_array($estado, ['Disponible', 'Prestado', 'Mantenimiento', 'Dañado', 'Agotado'])) {
             if ($estado === 'Agotado') {
-                $sql .= " AND (stock_disponible = 0 OR estado = 'Agotado')";
+                $sql .= " AND (stock_disponible = 0 OR estado = 'Agotado' OR (stock_disponible IS NULL AND estado = 'Prestado'))";
+            } elseif ($estado === 'Disponible') {
+                $sql .= " AND (stock_disponible > 0 OR (stock_disponible IS NULL AND estado = 'Disponible'))";
             } else {
                 $sql .= " AND estado = :estado";
                 $params['estado'] = $estado;
@@ -33,10 +35,17 @@ class HerramientaController {
 
         // Calculate dynamic state if column missing or 0 available
         foreach ($herramientas as &$h) {
-            $h['stock_total'] = (int)($h['stock_total'] ?? 1);
-            $h['stock_disponible'] = (int)($h['stock_disponible'] ?? ($h['estado'] === 'Disponible' ? 1 : 0));
-            $h['stock_prestado'] = (int)($h['stock_prestado'] ?? ($h['estado'] === 'Prestado' ? 1 : 0));
-            $h['stock_danado'] = (int)($h['stock_danado'] ?? ($h['estado'] === 'Dañado' ? 1 : 0));
+            $stotal = max(1, (int)($h['stock_total'] ?? 1));
+            $sprest = (int)($h['stock_prestado'] ?? ($h['estado'] === 'Prestado' ? 1 : 0));
+            $sdan = (int)($h['stock_danado'] ?? ($h['estado'] === 'Dañado' ? 1 : 0));
+            $sdisp = isset($h['stock_disponible']) && $h['stock_disponible'] !== null 
+                ? (int)$h['stock_disponible'] 
+                : max(0, $stotal - $sprest - $sdan);
+
+            $h['stock_total'] = $stotal;
+            $h['stock_disponible'] = $sdisp;
+            $h['stock_prestado'] = $sprest;
+            $h['stock_danado'] = $sdan;
 
             if ($h['stock_disponible'] <= 0 && $h['stock_prestado'] > 0) {
                 $h['estado_display'] = 'Agotado';
@@ -214,11 +223,38 @@ class HerramientaController {
             ORDER BY nd.id DESC
         ", ['hid' => $id]);
 
+        $cantPrestadaCalc = 0;
+        foreach ($prestamosActivos as $pa) {
+            $cantPrestadaCalc += (int)($pa['cantidad'] ?? 1);
+        }
+
+        $cantDanadaCalc = 0;
+        foreach ($notasDano as $nd) {
+            $cantDanadaCalc += (int)($nd['cantidad'] ?? 1);
+        }
+
+        $stotal = max(1, (int)($herramienta['stock_total'] ?? 1));
+        $sprest = isset($herramienta['stock_prestado']) && $herramienta['stock_prestado'] !== null 
+            ? (int)$herramienta['stock_prestado'] 
+            : max($cantPrestadaCalc, ($herramienta['estado'] === 'Prestado' ? 1 : 0));
+            
+        $sdan = isset($herramienta['stock_danado']) && $herramienta['stock_danado'] !== null 
+            ? (int)$herramienta['stock_danado'] 
+            : max($cantDanadaCalc, ($herramienta['estado'] === 'Dañado' ? 1 : 0));
+
+        $sdisp = isset($herramienta['stock_disponible']) && $herramienta['stock_disponible'] !== null 
+            ? (int)$herramienta['stock_disponible'] 
+            : max(0, $stotal - $sprest - $sdan);
+
+        $herramienta['stock_total'] = $stotal;
+        $herramienta['stock_prestado'] = $sprest;
+        $herramienta['stock_danado'] = $sdan;
+        $herramienta['stock_disponible'] = $sdisp;
+
         Response::success([
             'herramienta' => $herramienta,
             'prestamos_activos' => $prestamosActivos,
             'notas_dano' => $notasDano
         ], 'Detalle explicativo de disponibilidad');
     }
-}
 }
