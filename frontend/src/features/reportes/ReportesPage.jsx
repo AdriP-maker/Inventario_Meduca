@@ -167,83 +167,109 @@ const ReportesPage = () => {
       r7.font = { bold: true, size: 11, color: { argb: 'FF0A2540' } };
       r7.height = 22;
 
-      // KPI Card 1: Total Data Points (Pastel Fill + Black Border)
+      // KPI Card 1: Total Data Points (Pastel Fill + Soft Green Border)
       worksheet.mergeCells('A8:B8');
       worksheet.mergeCells('A9:B9');
       const cellK1H = worksheet.getCell('A8');
       cellK1H.value = 'TOTAL REGISTROS';
       cellK1H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
-      cellK1H.font = { bold: true, size: 9, color: { argb: 'FF15803D' } };
+      cellK1H.font = { bold: true, size: 8.5, color: { argb: 'FF15803D' } };
       cellK1H.alignment = { horizontal: 'center', vertical: 'middle' };
 
       const cellK1V = worksheet.getCell('A9');
       cellK1V.value = totalRegistros;
       cellK1V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
-      cellK1V.font = { bold: true, size: 16, color: { argb: 'FF15803D' } };
+      cellK1V.font = { bold: true, size: 15, color: { argb: 'FF15803D' } };
       cellK1V.alignment = { horizontal: 'center', vertical: 'middle' };
 
-      // KPI Card 2: Critical Items (Pastel Fill + Black Border)
+      ['A8', 'A9', 'B8', 'B9'].forEach(pos => {
+        worksheet.getCell(pos).border = {
+          top: { style: 'thin', color: { argb: 'FF86EFAC' } },
+          bottom: { style: 'thin', color: { argb: 'FF86EFAC' } },
+          left: { style: 'thin', color: { argb: 'FF86EFAC' } },
+          right: { style: 'thin', color: { argb: 'FF86EFAC' } }
+        };
+      });
+
+      // KPI Card 2: Critical Items (Pastel Fill + Soft Red Border)
       worksheet.mergeCells('C8:D8');
       worksheet.mergeCells('C9:D9');
       const cellK2H = worksheet.getCell('C8');
       cellK2H.value = 'ALTA PRIORIDAD (CRÍTICOS)';
       cellK2H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
-      cellK2H.font = { bold: true, size: 9, color: { argb: 'FFB91C1C' } };
+      cellK2H.font = { bold: true, size: 8.5, color: { argb: 'FFB91C1C' } };
       cellK2H.alignment = { horizontal: 'center', vertical: 'middle' };
 
       const cellK2V = worksheet.getCell('C9');
       cellK2V.value = criticosCount;
       cellK2V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
-      cellK2V.font = { bold: true, size: 16, color: { argb: 'FFB91C1C' } };
+      cellK2V.font = { bold: true, size: 15, color: { argb: 'FFB91C1C' } };
       cellK2V.alignment = { horizontal: 'center', vertical: 'middle' };
 
-      // KPI Card 3: Normal Metrics (Pastel Fill + Black Border)
+      ['C8', 'C9', 'D8', 'D9'].forEach(pos => {
+        worksheet.getCell(pos).border = {
+          top: { style: 'thin', color: { argb: 'FFFCA5A5' } },
+          bottom: { style: 'thin', color: { argb: 'FFFCA5A5' } },
+          left: { style: 'thin', color: { argb: 'FFFCA5A5' } },
+          right: { style: 'thin', color: { argb: 'FFFCA5A5' } }
+        };
+      });
+
+      // KPI Card 3: Normal Metrics (Pastel Fill + Soft Blue Border)
       worksheet.mergeCells('E8:F8');
       worksheet.mergeCells('E9:F9');
       const cellK3H = worksheet.getCell('E8');
       cellK3H.value = 'DISPONIBLES / NORMALES';
       cellK3H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } };
-      cellK3H.font = { bold: true, size: 9, color: { argb: 'FF0369A1' } };
+      cellK3H.font = { bold: true, size: 8.5, color: { argb: 'FF0369A1' } };
       cellK3H.alignment = { horizontal: 'center', vertical: 'middle' };
 
       const cellK3V = worksheet.getCell('E9');
       cellK3V.value = normalesCount;
       cellK3V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } };
-      cellK3V.font = { bold: true, size: 16, color: { argb: 'FF0369A1' } };
+      cellK3V.font = { bold: true, size: 15, color: { argb: 'FF0369A1' } };
       cellK3V.alignment = { horizontal: 'center', vertical: 'middle' };
 
-      // KPI Card 4: Pending / In Transit (Pastel Fill + Black Border)
+      ['E8', 'E9', 'F8', 'F9'].forEach(pos => {
+        worksheet.getCell(pos).border = {
+          top: { style: 'thin', color: { argb: 'FF93C5FD' } },
+          bottom: { style: 'thin', color: { argb: 'FF93C5FD' } },
+          left: { style: 'thin', color: { argb: 'FF93C5FD' } },
+          right: { style: 'thin', color: { argb: 'FF93C5FD' } }
+        };
+      });
+
+      // KPI Card 4: Pending / In Transit (Pastel Fill + Soft Yellow Border)
       worksheet.mergeCells('G8:H8');
       worksheet.mergeCells('G9:H9');
       const cellK4H = worksheet.getCell('G8');
       cellK4H.value = 'PENDIENTES / TRÁNSITO';
       cellK4H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
-      cellK4H.font = { bold: true, size: 9, color: { argb: 'FFA16207' } };
+      cellK4H.font = { bold: true, size: 8.5, color: { argb: 'FFA16207' } };
       cellK4H.alignment = { horizontal: 'center', vertical: 'middle' };
 
       const cellK4V = worksheet.getCell('G9');
       cellK4V.value = pendientesCount;
       cellK4V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
-      cellK4V.font = { bold: true, size: 16, color: { argb: 'FFA16207' } };
+      cellK4V.font = { bold: true, size: 15, color: { argb: 'FFA16207' } };
       cellK4V.alignment = { horizontal: 'center', vertical: 'middle' };
 
-      // Set clean black borders for KPI cards
-      ['A8', 'A9', 'B8', 'B9', 'C8', 'C9', 'D8', 'D9', 'E8', 'E9', 'F8', 'F9', 'G8', 'G9', 'H8', 'H9'].forEach(pos => {
+      ['G8', 'G9', 'H8', 'H9'].forEach(pos => {
         worksheet.getCell(pos).border = {
-          top: { style: 'thin', color: { argb: 'FF000000' } },
-          bottom: { style: 'thin', color: { argb: 'FF000000' } },
-          left: { style: 'thin', color: { argb: 'FF000000' } },
-          right: { style: 'thin', color: { argb: 'FF000000' } }
+          top: { style: 'thin', color: { argb: 'FFFDE047' } },
+          bottom: { style: 'thin', color: { argb: 'FFFDE047' } },
+          left: { style: 'thin', color: { argb: 'FFFDE047' } },
+          right: { style: 'thin', color: { argb: 'FFFDE047' } }
         };
       });
 
       worksheet.addRow([]);
       const r11 = worksheet.addRow(['DETALLE OPERATIVO DE MÉTRICAS ANALIZADAS']);
       worksheet.mergeCells('A11:I11');
-      r11.font = { bold: true, size: 11, color: { argb: 'FF0A2540' } };
-      r11.height = 22;
+      r11.font = { bold: true, size: 10.5, color: { argb: 'FF0A2540' } };
+      r11.height = 20;
 
-      // Table Header Row (White Background #FFFFFF with Bold Dark Navy Font & Black Border)
+      // Table Header Row (White Background #FFFFFF with Bold Dark Navy Font & Soft Slate Border)
       let tableHeaders = [];
       if (tipo === 'prestamos') {
         tableHeaders = ['CÓDIGO PRÉSTAMO', 'FUNCIONARIO SOLICITANTE', 'CÉDULA', 'ESCUELA / PROYECTO', 'FECHA PRÉSTAMO', 'FECHA DEV. ESTIMADA', 'ESTADO', 'HERRAMIENTAS INVOLUCRADAS', 'REGISTRADO POR'];
@@ -256,20 +282,20 @@ const ReportesPage = () => {
       }
 
       const thRow = worksheet.addRow(tableHeaders);
-      thRow.height = 26;
+      thRow.height = 24;
       thRow.eachCell((cell) => {
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
-        cell.font = { bold: true, color: { argb: 'FF0A2540' }, size: 10 };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF8FAFC' } };
+        cell.font = { bold: true, color: { argb: 'FF0A2540' }, size: 9.5 };
         cell.alignment = { horizontal: 'center', vertical: 'middle' };
         cell.border = {
-          top: { style: 'medium', color: { argb: 'FF000000' } },
-          bottom: { style: 'medium', color: { argb: 'FF000000' } },
-          left: { style: 'thin', color: { argb: 'FF000000' } },
-          right: { style: 'thin', color: { argb: 'FF000000' } }
+          top: { style: 'thin', color: { argb: 'FF94A3B8' } },
+          bottom: { style: 'medium', color: { argb: 'FF94A3B8' } },
+          left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          right: { style: 'thin', color: { argb: 'FFCBD5E1' } }
         };
       });
 
-      // Data Rows with Solid Black Gridlines & Snug Data Fills
+      // Data Rows with Subtle Slate Grey Gridlines (#D1D5DB)
       reporteData.forEach((item, idx) => {
         let rowValues = [];
         let stText = (item.estado_devolucion || item.estado || 'Disponible').toUpperCase();
@@ -319,15 +345,15 @@ const ReportesPage = () => {
         }
 
         const dataRow = worksheet.addRow(rowValues);
-        dataRow.height = 22;
+        dataRow.height = 20;
 
         dataRow.eachCell((cell, colNumber) => {
           cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
           cell.border = {
-            top: { style: 'thin', color: { argb: 'FF000000' } },
-            bottom: { style: 'thin', color: { argb: 'FF000000' } },
-            left: { style: 'thin', color: { argb: 'FF000000' } },
-            right: { style: 'thin', color: { argb: 'FF000000' } }
+            top: { style: 'thin', color: { argb: 'FFD1D5DB' } },
+            bottom: { style: 'thin', color: { argb: 'FFD1D5DB' } },
+            left: { style: 'thin', color: { argb: 'FFD1D5DB' } },
+            right: { style: 'thin', color: { argb: 'FFD1D5DB' } }
           };
           cell.alignment = { vertical: 'middle' };
 
@@ -335,22 +361,46 @@ const ReportesPage = () => {
             cell.font = { bold: true, color: { argb: 'FF1A5BB8' } };
           }
 
-          // Custom Status Cell Highlighting with Black Border
+          // Custom Status Cell Highlighting with Soft Border
           const headerName = tableHeaders[colNumber - 1];
           if (headerName === 'ESTADO') {
             cell.alignment = { horizontal: 'center', vertical: 'middle' };
             if (stText === 'DISPONIBLE' || stText === 'DEVUELTO' || stText === 'ACTIVO' || stText === 'EXCELENTE' || stText === 'BUENO') {
               cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
               cell.font = { bold: true, color: { argb: 'FF15803D' }, size: 9 };
+              cell.border = {
+                top: { style: 'thin', color: { argb: 'FF86EFAC' } },
+                bottom: { style: 'thin', color: { argb: 'FF86EFAC' } },
+                left: { style: 'thin', color: { argb: 'FF86EFAC' } },
+                right: { style: 'thin', color: { argb: 'FF86EFAC' } }
+              };
             } else if (stText === 'PRESTADO' || stText === 'PENDIENTE' || stText === 'REGULAR') {
               cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
               cell.font = { bold: true, color: { argb: 'FFA16207' }, size: 9 };
+              cell.border = {
+                top: { style: 'thin', color: { argb: 'FFFDE047' } },
+                bottom: { style: 'thin', color: { argb: 'FFFDE047' } },
+                left: { style: 'thin', color: { argb: 'FFFDE047' } },
+                right: { style: 'thin', color: { argb: 'FFFDE047' } }
+              };
             } else if (stText === 'DAÑADO' || stText === 'CON DAÑO' || stText === 'INACTIVO' || stText === 'VENCIDO') {
               cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
               cell.font = { bold: true, color: { argb: 'FFB91C1C' }, size: 9 };
+              cell.border = {
+                top: { style: 'thin', color: { argb: 'FFFCA5A5' } },
+                bottom: { style: 'thin', color: { argb: 'FFFCA5A5' } },
+                left: { style: 'thin', color: { argb: 'FFFCA5A5' } },
+                right: { style: 'thin', color: { argb: 'FFFCA5A5' } }
+              };
             } else if (stText === 'MANTENIMIENTO') {
               cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF3E0' } };
               cell.font = { bold: true, color: { argb: 'FFE65100' }, size: 9 };
+              cell.border = {
+                top: { style: 'thin', color: { argb: 'FFFFCC80' } },
+                bottom: { style: 'thin', color: { argb: 'FFFFCC80' } },
+                left: { style: 'thin', color: { argb: 'FFFFCC80' } },
+                right: { style: 'thin', color: { argb: 'FFFFCC80' } }
+              };
             }
           }
         });
@@ -925,39 +975,39 @@ const ReportesPage = () => {
                 </div>
               </div>
 
-              {/* KPI Boxes Row (Pastel Fills + Black Borders) */}
+              {/* KPI Boxes Row (Pastel Fills + Soft Themed Borders) */}
               <div className="row g-2 mb-2">
                 <div className="col-3">
-                  <div className="p-2 border border-dark text-center font-monospace rounded-1" style={{ background: '#dcfce7', color: '#15803d', fontWeight: 'bold', fontSize: '0.8rem' }}>
+                  <div className="p-2 text-center font-monospace rounded-1 border" style={{ background: '#dcfce7', color: '#15803d', borderColor: '#86efac', fontWeight: 'bold', fontSize: '0.8rem' }}>
                     Total: {totalRegistros}
                   </div>
                 </div>
                 <div className="col-3">
-                  <div className="p-2 border border-dark text-center font-monospace rounded-1" style={{ background: '#fee2e2', color: '#b91c1c', fontWeight: 'bold', fontSize: '0.8rem' }}>
+                  <div className="p-2 text-center font-monospace rounded-1 border" style={{ background: '#fee2e2', color: '#b91c1c', borderColor: '#fca5a5', fontWeight: 'bold', fontSize: '0.8rem' }}>
                     Críticos: {criticosCount}
                   </div>
                 </div>
                 <div className="col-3">
-                  <div className="p-2 border border-dark text-center font-monospace rounded-1" style={{ background: '#e0f2fe', color: '#0369a1', fontWeight: 'bold', fontSize: '0.8rem' }}>
+                  <div className="p-2 text-center font-monospace rounded-1 border" style={{ background: '#e0f2fe', color: '#0369a1', borderColor: '#93c5fd', fontWeight: 'bold', fontSize: '0.8rem' }}>
                     Normales: {normalesCount}
                   </div>
                 </div>
                 <div className="col-3">
-                  <div className="p-2 border border-dark text-center font-monospace rounded-1" style={{ background: '#fef9c3', color: '#a16207', fontWeight: 'bold', fontSize: '0.8rem' }}>
+                  <div className="p-2 text-center font-monospace rounded-1 border" style={{ background: '#fef9c3', color: '#a16207', borderColor: '#fde047', fontWeight: 'bold', fontSize: '0.8rem' }}>
                     Pendientes: {pendientesCount}
                   </div>
                 </div>
               </div>
 
-              {/* Excel Data Table (White Background Header + Black Gridlines) */}
-              <table className="table table-bordered border-dark table-sm mb-0" style={{ fontSize: '0.775rem' }}>
+              {/* Excel Data Table (Subtle Slate Gridlines #CBD5E1) */}
+              <table className="table table-bordered table-sm mb-0" style={{ fontSize: '0.775rem', borderColor: '#cbd5e1' }}>
                 <thead>
-                  <tr style={{ background: '#ffffff', color: '#0a2540', borderBottom: '2px solid #000000' }}>
-                    <th className="py-2 px-2 text-dark fw-bold border-dark">A (Código)</th>
-                    <th className="py-2 px-2 text-dark fw-bold border-dark">B (Descripción / Funcionario)</th>
-                    <th className="py-2 px-2 text-dark fw-bold border-dark">C (Fecha / Ubicación)</th>
-                    <th className="py-2 px-2 text-dark fw-bold border-dark">D (Responsable / Registrado Por)</th>
-                    <th className="py-2 px-2 text-dark fw-bold border-dark">E (Estado / Prioridad)</th>
+                  <tr style={{ background: '#f8fafc', color: '#0a2540', borderBottom: '2px solid #94a3b8' }}>
+                    <th className="py-2 px-2 text-dark fw-bold" style={{ borderColor: '#cbd5e1' }}>A (Código)</th>
+                    <th className="py-2 px-2 text-dark fw-bold" style={{ borderColor: '#cbd5e1' }}>B (Descripción / Funcionario)</th>
+                    <th className="py-2 px-2 text-dark fw-bold" style={{ borderColor: '#cbd5e1' }}>C (Fecha / Ubicación)</th>
+                    <th className="py-2 px-2 text-dark fw-bold" style={{ borderColor: '#cbd5e1' }}>D (Responsable / Registrado Por)</th>
+                    <th className="py-2 px-2 text-dark fw-bold" style={{ borderColor: '#cbd5e1' }}>E (Estado / Prioridad)</th>
                   </tr>
                 </thead>
                 <tbody>
