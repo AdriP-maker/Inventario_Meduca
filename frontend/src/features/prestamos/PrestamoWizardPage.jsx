@@ -31,8 +31,13 @@ const PrestamoWizardPage = () => {
       if (resFunc.data.success) setFuncionarios(resFunc.data.data);
       if (resHerr.data.success) {
         const dispList = (resHerr.data.data || []).filter(h => {
-          const stockDisp = parseInt(h.stock_disponible ?? (h.estado === 'Disponible' ? 1 : 0), 10);
-          return stockDisp > 0;
+          const stotal = parseInt(h.stock_total ?? 1, 10);
+          const sprest = parseInt(h.stock_prestado ?? 0, 10);
+          const sdan = parseInt(h.stock_danado ?? 0, 10);
+          const calcDisp = Math.max(0, stotal - sprest - sdan);
+          const dbDisp = parseInt(h.stock_disponible ?? calcDisp, 10);
+          const effectiveDisp = (dbDisp === 0 && (h.estado === 'Disponible' || !h.estado) && sprest === 0 && sdan === 0) ? calcDisp : dbDisp;
+          return effectiveDisp > 0 && h.estado !== 'Mantenimiento' && h.estado !== 'Dañado';
         });
         setHerramientas(dispList);
       }

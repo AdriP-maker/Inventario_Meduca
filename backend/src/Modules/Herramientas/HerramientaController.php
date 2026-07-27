@@ -21,9 +21,9 @@ class HerramientaController {
 
         if ($estado && in_array($estado, ['Disponible', 'Prestado', 'Mantenimiento', 'Dañado', 'Agotado'])) {
             if ($estado === 'Agotado') {
-                $sql .= " AND (stock_disponible = 0 OR estado = 'Agotado' OR (stock_disponible IS NULL AND estado = 'Prestado'))";
+                $sql .= " AND (COALESCE(stock_disponible, GREATEST(0, COALESCE(stock_total, 1) - COALESCE(stock_prestado, 0) - COALESCE(stock_danado, 0))) = 0 OR estado = 'Agotado')";
             } elseif ($estado === 'Disponible') {
-                $sql .= " AND (stock_disponible > 0 OR (stock_disponible IS NULL AND estado = 'Disponible'))";
+                $sql .= " AND (COALESCE(NULLIF(stock_disponible, 0), GREATEST(0, COALESCE(stock_total, 1) - COALESCE(stock_prestado, 0) - COALESCE(stock_danado, 0))) > 0 OR estado = 'Disponible') AND estado NOT IN ('Mantenimiento', 'Dañado')";
             } else {
                 $sql .= " AND estado = :estado";
                 $params['estado'] = $estado;
@@ -33,14 +33,20 @@ class HerramientaController {
         $sql .= " ORDER BY id DESC";
         $herramientas = Database::query($sql, $params);
 
-        // Calculate dynamic state if column missing or 0 available
+        // Calculate dynamic state if column missing or out-of-sync
         foreach ($herramientas as &$h) {
             $stotal = max(1, (int)($h['stock_total'] ?? 1));
             $sprest = (int)($h['stock_prestado'] ?? ($h['estado'] === 'Prestado' ? 1 : 0));
             $sdan = (int)($h['stock_danado'] ?? ($h['estado'] === 'Dañado' ? 1 : 0));
-            $sdisp = isset($h['stock_disponible']) && $h['stock_disponible'] !== null 
-                ? (int)$h['stock_disponible'] 
-                : max(0, $stotal - $sprest - $sdan);
+            $calcDisp = max(0, $stotal - $sprest - $sdan);
+            
+            // If DB column stock_disponible is 0 but item is marked Disponible with 0 loans and 0 damage, recalculate
+            if (isset($h['stock_disponible']) && $h['stock_disponible'] !== null) {
+                $dbDisp = (int)$h['stock_disponible'];
+                $sdisp = ($dbDisp === 0 && $h['estado'] === 'Disponible' && $sprest === 0 && $sdan === 0) ? $calcDisp : $dbDisp;
+            } else {
+                $sdisp = $calcDisp;
+            }
 
             $h['stock_total'] = $stotal;
             $h['stock_disponible'] = $sdisp;
