@@ -119,11 +119,11 @@ const ReportesPage = () => {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Informe_MEDUCA');
 
-      // Row 1: Reserved for Government Logo
+      // Row 1: Reserved for Large Government Logo
       const rLogo = worksheet.addRow(['']);
-      rLogo.height = 42;
+      rLogo.height = 62;
 
-      // Add Logo Image at the top above title text
+      // Add Larger Logo Image at top left above title text
       if (LOGO_MEDUCA_BASE64) {
         const logoId = workbook.addImage({
           base64: LOGO_MEDUCA_BASE64.replace(/^data:image\/png;base64,/, ''),
@@ -131,7 +131,7 @@ const ReportesPage = () => {
         });
         worksheet.addImage(logoId, {
           tl: { col: 0, row: 0 },
-          ext: { width: 180, height: 42 }
+          ext: { width: 240, height: 60 }
         });
       }
 
@@ -162,63 +162,63 @@ const ReportesPage = () => {
       r7.font = { bold: true, size: 11, color: { argb: 'FF0A2540' } };
       r7.height = 22;
 
-      // KPI Card 1: Total Data Points
+      // KPI Card 1: Total Data Points (Pastel Fill + Black Border)
       worksheet.mergeCells('A8:B8');
       worksheet.mergeCells('A9:B9');
       const cellK1H = worksheet.getCell('A8');
       cellK1H.value = 'TOTAL REGISTROS';
-      cellK1H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
+      cellK1H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
       cellK1H.font = { bold: true, size: 9, color: { argb: 'FF15803D' } };
       cellK1H.alignment = { horizontal: 'center', vertical: 'middle' };
 
       const cellK1V = worksheet.getCell('A9');
       cellK1V.value = totalRegistros;
-      cellK1V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
+      cellK1V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
       cellK1V.font = { bold: true, size: 16, color: { argb: 'FF15803D' } };
       cellK1V.alignment = { horizontal: 'center', vertical: 'middle' };
 
-      // KPI Card 2: Critical Items
+      // KPI Card 2: Critical Items (Pastel Fill + Black Border)
       worksheet.mergeCells('C8:D8');
       worksheet.mergeCells('C9:D9');
       const cellK2H = worksheet.getCell('C8');
       cellK2H.value = 'ALTA PRIORIDAD (CRÍTICOS)';
-      cellK2H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
+      cellK2H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
       cellK2H.font = { bold: true, size: 9, color: { argb: 'FFB91C1C' } };
       cellK2H.alignment = { horizontal: 'center', vertical: 'middle' };
 
       const cellK2V = worksheet.getCell('C9');
       cellK2V.value = criticosCount;
-      cellK2V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
+      cellK2V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
       cellK2V.font = { bold: true, size: 16, color: { argb: 'FFB91C1C' } };
       cellK2V.alignment = { horizontal: 'center', vertical: 'middle' };
 
-      // KPI Card 3: Normal Metrics
+      // KPI Card 3: Normal Metrics (Pastel Fill + Black Border)
       worksheet.mergeCells('E8:F8');
       worksheet.mergeCells('E9:F9');
       const cellK3H = worksheet.getCell('E8');
       cellK3H.value = 'DISPONIBLES / NORMALES';
-      cellK3H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
+      cellK3H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } };
       cellK3H.font = { bold: true, size: 9, color: { argb: 'FF0369A1' } };
       cellK3H.alignment = { horizontal: 'center', vertical: 'middle' };
 
       const cellK3V = worksheet.getCell('E9');
       cellK3V.value = normalesCount;
-      cellK3V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
+      cellK3V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } };
       cellK3V.font = { bold: true, size: 16, color: { argb: 'FF0369A1' } };
       cellK3V.alignment = { horizontal: 'center', vertical: 'middle' };
 
-      // KPI Card 4: Pending / In Transit
+      // KPI Card 4: Pending / In Transit (Pastel Fill + Black Border)
       worksheet.mergeCells('G8:H8');
       worksheet.mergeCells('G9:H9');
       const cellK4H = worksheet.getCell('G8');
       cellK4H.value = 'PENDIENTES / TRÁNSITO';
-      cellK4H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
+      cellK4H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
       cellK4H.font = { bold: true, size: 9, color: { argb: 'FFA16207' } };
       cellK4H.alignment = { horizontal: 'center', vertical: 'middle' };
 
       const cellK4V = worksheet.getCell('G9');
       cellK4V.value = pendientesCount;
-      cellK4V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
+      cellK4V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
       cellK4V.font = { bold: true, size: 16, color: { argb: 'FFA16207' } };
       cellK4V.alignment = { horizontal: 'center', vertical: 'middle' };
 
@@ -237,7 +237,7 @@ const ReportesPage = () => {
       r11.font = { bold: true, size: 11, color: { argb: 'FF0A2540' } };
       r11.height = 22;
 
-      // Table Header Row (Dark Green #0D522C with Solid Black Border)
+      // Table Header Row (White Background #FFFFFF with Bold Dark Navy Font & Black Border)
       let tableHeaders = [];
       if (tipo === 'prestamos') {
         tableHeaders = ['CÓDIGO PRÉSTAMO', 'FUNCIONARIO SOLICITANTE', 'CÉDULA', 'ESCUELA / PROYECTO', 'FECHA PRÉSTAMO', 'FECHA DEV. ESTIMADA', 'ESTADO', 'HERRAMIENTAS INVOLUCRADAS', 'REGISTRADO POR'];
@@ -252,8 +252,8 @@ const ReportesPage = () => {
       const thRow = worksheet.addRow(tableHeaders);
       thRow.height = 26;
       thRow.eachCell((cell) => {
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0D522C' } };
-        cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10 };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
+        cell.font = { bold: true, color: { argb: 'FF0A2540' }, size: 10 };
         cell.alignment = { horizontal: 'center', vertical: 'middle' };
         cell.border = {
           top: { style: 'medium', color: { argb: 'FF000000' } },
@@ -896,54 +896,57 @@ const ReportesPage = () => {
 
             {/* Grid View Container Styled like Microsoft Excel */}
             <div className="bg-white text-dark p-3 rounded border overflow-auto" style={{ fontFamily: 'Segoe UI, Calibri, sans-serif', fontSize: '0.8rem' }}>
-              <div className="d-flex align-items-center justify-content-between p-2 mb-2 bg-light border">
-                <div>
-                  <div className="fw-bold text-primary" style={{ fontSize: '0.95rem' }}>
-                    REPÚBLICA DE PANAMÁ • MINISTERIO DE EDUCACIÓN - MEDUCA COCLÉ
-                  </div>
-                  <div className="fw-semibold text-secondary" style={{ fontSize: '0.85rem' }}>
-                    INFORME DE ANÁLISIS DE DATOS Y MÉTRICAS DE INVENTARIO Y PRÉSTAMOS ({tipo.toUpperCase()})
-                  </div>
-                  <div className="text-muted" style={{ fontSize: '0.725rem' }}>
-                    FECHA: {new Date().toLocaleDateString()} | GENERADO POR: {user?.nombre || 'Administrador'}
-                  </div>
+              <div className="p-3 mb-2 bg-light border rounded">
+                <div className="mb-2">
+                  <img src={LOGO_MEDUCA_BASE64} alt="Logo MEDUCA Excel" style={{ height: '60px', maxWidth: '240px' }} className="object-fit-contain" />
                 </div>
-                <img src={LOGO_MEDUCA_BASE64} alt="Logo MEDUCA Excel" style={{ height: '45px', maxWidth: '160px' }} className="object-fit-contain" />
+                <div className="fw-extrabold text-primary" style={{ fontSize: '0.95rem' }}>
+                  REPÚBLICA DE PANAMÁ • MINISTERIO DE EDUCACIÓN
+                </div>
+                <div className="fw-bold text-secondary" style={{ fontSize: '0.85rem' }}>
+                  MEDUCA COCLÉ • DEPARTAMENTO DE MANTENIMIENTO
+                </div>
+                <div className="fw-semibold text-dark" style={{ fontSize: '0.8rem' }}>
+                  INFORME OFICIAL DE ANÁLISIS DE DATOS Y MÉTRICAS ({tipo.toUpperCase()})
+                </div>
+                <div className="text-muted" style={{ fontSize: '0.725rem' }}>
+                  FECHA DE EMISIÓN: {new Date().toLocaleDateString()} | GENERADO POR: {user?.nombre || 'Administrador'}
+                </div>
               </div>
 
-              {/* KPI Boxes Row */}
+              {/* KPI Boxes Row (Pastel Fills + Black Borders) */}
               <div className="row g-2 mb-2">
                 <div className="col-3">
-                  <div className="p-1.5 border text-center font-monospace" style={{ background: '#dcfce7', color: '#15803d', fontWeight: 'bold', fontSize: '0.75rem' }}>
+                  <div className="p-2 border border-dark text-center font-monospace rounded-1" style={{ background: '#dcfce7', color: '#15803d', fontWeight: 'bold', fontSize: '0.8rem' }}>
                     Total: {totalRegistros}
                   </div>
                 </div>
                 <div className="col-3">
-                  <div className="p-1.5 border text-center font-monospace" style={{ background: '#fee2e2', color: '#b91c1c', fontWeight: 'bold', fontSize: '0.75rem' }}>
+                  <div className="p-2 border border-dark text-center font-monospace rounded-1" style={{ background: '#fee2e2', color: '#b91c1c', fontWeight: 'bold', fontSize: '0.8rem' }}>
                     Críticos: {criticosCount}
                   </div>
                 </div>
                 <div className="col-3">
-                  <div className="p-1.5 border text-center font-monospace" style={{ background: '#e0f2fe', color: '#0369a1', fontWeight: 'bold', fontSize: '0.75rem' }}>
+                  <div className="p-2 border border-dark text-center font-monospace rounded-1" style={{ background: '#e0f2fe', color: '#0369a1', fontWeight: 'bold', fontSize: '0.8rem' }}>
                     Normales: {normalesCount}
                   </div>
                 </div>
                 <div className="col-3">
-                  <div className="p-1.5 border text-center font-monospace" style={{ background: '#fef9c3', color: '#a16207', fontWeight: 'bold', fontSize: '0.75rem' }}>
+                  <div className="p-2 border border-dark text-center font-monospace rounded-1" style={{ background: '#fef9c3', color: '#a16207', fontWeight: 'bold', fontSize: '0.8rem' }}>
                     Pendientes: {pendientesCount}
                   </div>
                 </div>
               </div>
 
-              {/* Excel Data Table */}
-              <table className="table table-bordered table-sm mb-0" style={{ fontSize: '0.775rem' }}>
+              {/* Excel Data Table (White Background Header + Black Gridlines) */}
+              <table className="table table-bordered border-dark table-sm mb-0" style={{ fontSize: '0.775rem' }}>
                 <thead>
-                  <tr style={{ background: '#0d522c', color: '#ffffff' }}>
-                    <th className="py-1.5 text-white">A (Código)</th>
-                    <th className="py-1.5 text-white">B (Descripción / Funcionario)</th>
-                    <th className="py-1.5 text-white">C (Fecha / Ubicación)</th>
-                    <th className="py-1.5 text-white">D (Responsable / Registrado Por)</th>
-                    <th className="py-1.5 text-white">E (Estado / Prioridad)</th>
+                  <tr style={{ background: '#ffffff', color: '#0a2540', borderBottom: '2px solid #000000' }}>
+                    <th className="py-2 px-2 text-dark fw-bold border-dark">A (Código)</th>
+                    <th className="py-2 px-2 text-dark fw-bold border-dark">B (Descripción / Funcionario)</th>
+                    <th className="py-2 px-2 text-dark fw-bold border-dark">C (Fecha / Ubicación)</th>
+                    <th className="py-2 px-2 text-dark fw-bold border-dark">D (Responsable / Registrado Por)</th>
+                    <th className="py-2 px-2 text-dark fw-bold border-dark">E (Estado / Prioridad)</th>
                   </tr>
                 </thead>
                 <tbody>
