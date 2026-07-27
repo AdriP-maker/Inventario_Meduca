@@ -5,8 +5,8 @@ import logoMeduca from '../../assets/logo_meduca.png';
 import { LogIn, Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 const LoginPage = () => {
-  const [usuario, setUsuario] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [usuario, setUsuario] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const { login, loading } = useContext(AuthContext);
@@ -122,11 +122,6 @@ const LoginPage = () => {
           </button>
         </form>
 
-        <div className="mt-4 p-3 bg-light rounded text-center" style={{ fontSize: '0.85rem' }}>
-          <span className="text-muted">Credenciales de prueba por defecto:</span>
-          <br />
-          <strong>Usuario:</strong> admin | <strong>Contraseña:</strong> admin123
-        </div>
       </div>
     </div>
   );
