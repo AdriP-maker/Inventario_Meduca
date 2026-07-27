@@ -119,51 +119,51 @@ const ReportesPage = () => {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Informe_MEDUCA');
 
-      // Row 1: Reserved for Large Government Logo (Merged A1:H1)
+      // Row 1: Reserved for Large Government Logo (Merged A1:I1)
       const rLogo = worksheet.addRow(['']);
-      worksheet.mergeCells('A1:H1');
+      worksheet.mergeCells('A1:I1');
       rLogo.height = 64;
 
-      // Add Centered Logo Image over merged A1:H1 cell
+      // Add Centered Logo Image over merged A1:I1 cell
       if (LOGO_MEDUCA_BASE64) {
         const logoId = workbook.addImage({
           base64: LOGO_MEDUCA_BASE64.replace(/^data:image\/png;base64,/, ''),
           extension: 'png',
         });
         worksheet.addImage(logoId, {
-          tl: { col: 3.58, row: 0.08 },
+          tl: { col: 3.76, row: 0.08 },
           ext: { width: 240, height: 58 },
           editAs: 'oneCell'
         });
       }
 
-      // Row 2: Header Title (Merged A2:H2)
+      // Row 2: Header Title (Merged A2:I2)
       const r1 = worksheet.addRow(['REPÚBLICA DE PANAMÁ • MINISTERIO DE EDUCACIÓN']);
-      worksheet.mergeCells('A2:H2');
+      worksheet.mergeCells('A2:I2');
       const cA2 = worksheet.getCell('A2');
       cA2.font = { bold: true, size: 13, color: { argb: 'FF0A2540' } };
       cA2.alignment = { vertical: 'middle', horizontal: 'center' };
       r1.height = 24;
 
-      // Row 3: Department Subtitle (Merged A3:H3)
+      // Row 3: Department Subtitle (Merged A3:I3)
       const r2 = worksheet.addRow(['MEDUCA COCLÉ • DEPARTAMENTO DE MANTENIMIENTO']);
-      worksheet.mergeCells('A3:H3');
+      worksheet.mergeCells('A3:I3');
       const cA3 = worksheet.getCell('A3');
       cA3.font = { bold: true, size: 11, color: { argb: 'FF1A5BB8' } };
       cA3.alignment = { vertical: 'middle', horizontal: 'center' };
       r2.height = 22;
 
-      // Row 4: Report Name (Merged A4:H4)
+      // Row 4: Report Name (Merged A4:I4)
       const r3 = worksheet.addRow([`INFORME OFICIAL DE ANÁLISIS DE DATOS Y MÉTRICAS (${tipo.toUpperCase()})`]);
-      worksheet.mergeCells('A4:H4');
+      worksheet.mergeCells('A4:I4');
       const cA4 = worksheet.getCell('A4');
       cA4.font = { bold: true, size: 10, color: { argb: 'FF333333' } };
       cA4.alignment = { vertical: 'middle', horizontal: 'center' };
       r3.height = 20;
 
-      // Row 5: Metadata (Merged A5:H5)
+      // Row 5: Metadata (Merged A5:I5)
       const r4 = worksheet.addRow([`FECHA DE EMISIÓN: ${new Date().toLocaleDateString('es-PA')} | GENERADO POR: ${user?.nombre || 'Administrador'}`]);
-      worksheet.mergeCells('A5:H5');
+      worksheet.mergeCells('A5:I5');
       const cA5 = worksheet.getCell('A5');
       cA5.font = { italic: true, size: 9, color: { argb: 'FF666666' } };
       cA5.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -171,9 +171,9 @@ const ReportesPage = () => {
 
       worksheet.addRow([]);
 
-      // Row 7: Section Header for KPI (Merged A7:H7)
+      // Row 7: Section Header for KPI (Merged A7:I7)
       const r7 = worksheet.addRow(['RESUMEN EJECUTIVO (MÉTRICAS Y PUNTOS DE CONTROL)']);
-      worksheet.mergeCells('A7:H7');
+      worksheet.mergeCells('A7:I7');
       const cA7 = worksheet.getCell('A7');
       cA7.font = { bold: true, size: 11, color: { argb: 'FF0A2540' } };
       cA7.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -252,8 +252,8 @@ const ReportesPage = () => {
       });
 
       // KPI Card 4: Pending / In Transit (Pastel Fill + Soft Yellow Border)
-      worksheet.mergeCells('G8:H8');
-      worksheet.mergeCells('G9:H9');
+      worksheet.mergeCells('G8:I8');
+      worksheet.mergeCells('G9:I9');
       const cellK4H = worksheet.getCell('G8');
       cellK4H.value = 'PENDIENTES / TRÁNSITO';
       cellK4H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
@@ -266,7 +266,7 @@ const ReportesPage = () => {
       cellK4V.font = { bold: true, size: 15, color: { argb: 'FFA16207' } };
       cellK4V.alignment = { horizontal: 'center', vertical: 'middle' };
 
-      ['G8', 'G9', 'H8', 'H9'].forEach(pos => {
+      ['G8', 'G9', 'H8', 'H9', 'I8', 'I9'].forEach(pos => {
         worksheet.getCell(pos).border = {
           top: { style: 'thin', color: { argb: 'FFFDE047' } },
           bottom: { style: 'thin', color: { argb: 'FFFDE047' } },
@@ -468,7 +468,8 @@ const ReportesPage = () => {
         sort: false,
         autoFilter: false,
         pivotTables: false,
-        objects: true
+        objects: false,
+        scenarios: false
       });
 
       const buffer = await workbook.xlsx.writeBuffer();
