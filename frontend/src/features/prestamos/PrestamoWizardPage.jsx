@@ -281,21 +281,21 @@ const PrestamoWizardPage = () => {
         )}
 
         {/* Wizard Controls */}
-        <div className="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+        <div className="d-flex flex-column-reverse flex-sm-row justify-content-between align-items-center gap-2.5 mt-4 mt-sm-5 pt-3 border-top">
           {step > 1 ? (
             <button
-              className="btn btn-outline-secondary d-flex align-items-center gap-2 fw-semibold"
+              className="btn btn-outline-secondary w-100 w-sm-auto d-flex align-items-center justify-content-center gap-2 fw-semibold py-2 px-3"
               onClick={() => setStep(step - 1)}
               disabled={submitting}
             >
               <ArrowLeft size={18} />
               <span>Anterior</span>
             </button>
-          ) : <div />}
+          ) : <div className="d-none d-sm-block" />}
 
           {step < 4 ? (
             <button
-              className="btn btn-primary d-flex align-items-center gap-2 fw-semibold"
+              className="btn btn-primary w-100 w-sm-auto d-flex align-items-center justify-content-center gap-2 fw-semibold py-2 px-3"
               style={{ background: '#1a5bb8', borderColor: '#1a5bb8' }}
               onClick={() => {
                 if (step === 1 && !selectedFuncionario) return toast.warning('Debe seleccionar un funcionario responsable del préstamo.');
@@ -318,7 +318,7 @@ const PrestamoWizardPage = () => {
             </button>
           ) : (
             <button
-              className="btn btn-success d-flex align-items-center gap-2 fw-bold"
+              className="btn btn-success w-100 w-sm-auto d-flex align-items-center justify-content-center gap-2 fw-bold py-2 px-3"
               onClick={handleFinish}
               disabled={submitting}
             >

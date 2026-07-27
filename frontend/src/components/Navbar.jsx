@@ -51,10 +51,11 @@ const Navbar = ({ title, breadcrumbs, onToggleSidebar }) => {
       <div className="d-flex align-items-center">
         <button
           onClick={onToggleSidebar}
-          className="btn btn-light border p-2 me-2 text-dark d-lg-none rounded-3 shadow-sm"
+          className="btn btn-light border p-0 me-2 me-sm-3 text-dark d-lg-none rounded-3 shadow-sm d-flex align-items-center justify-content-center"
+          style={{ width: '38px', height: '38px', flexShrink: 0 }}
           title="Abrir menú de navegación"
         >
-          <Menu size={22} />
+          <Menu size={20} />
         </button>
         <div>
           <h2 className="nav-page-title">{title}</h2>
@@ -69,10 +70,11 @@ const Navbar = ({ title, breadcrumbs, onToggleSidebar }) => {
         <div className="position-relative" ref={dropdownRef}>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="btn btn-light rounded-circle p-2 text-secondary position-relative shadow-sm"
+            className="btn btn-light rounded-circle p-0 text-secondary position-relative shadow-sm d-flex align-items-center justify-content-center"
+            style={{ width: '38px', height: '38px', flexShrink: 0 }}
             title="Ver Notificaciones"
           >
-            <Bell size={20} />
+            <Bell size={19} />
             {unreadCount > 0 && (
               <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light">
                 {unreadCount}
