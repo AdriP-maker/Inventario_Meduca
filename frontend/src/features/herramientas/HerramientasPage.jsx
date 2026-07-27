@@ -280,7 +280,7 @@ const HerramientasPage = () => {
                       value={formData.codigo}
                       onChange={(e) => setFormData({ ...formData, codigo: e.target.value })}
                       minLength={2}
-                      maxLength={30}
+                      maxLength={20}
                       required
                     />
                   </div>
@@ -292,7 +292,7 @@ const HerramientasPage = () => {
                       value={formData.nombre}
                       onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                       minLength={2}
-                      maxLength={60}
+                      maxLength={50}
                       required
                     />
                   </div>
@@ -304,7 +304,7 @@ const HerramientasPage = () => {
                       value={formData.marca}
                       onChange={(e) => setFormData({ ...formData, marca: e.target.value })}
                       minLength={2}
-                      maxLength={40}
+                      maxLength={30}
                       required
                     />
                   </div>
@@ -316,7 +316,7 @@ const HerramientasPage = () => {
                       value={formData.modelo}
                       onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
                       minLength={1}
-                      maxLength={40}
+                      maxLength={30}
                     />
                   </div>
                   <div className="col-12 col-md-4">
@@ -327,7 +327,7 @@ const HerramientasPage = () => {
                       value={formData.numero_serie}
                       onChange={(e) => setFormData({ ...formData, numero_serie: e.target.value })}
                       minLength={1}
-                      maxLength={40}
+                      maxLength={30}
                     />
                   </div>
                   <div className="col-12 col-md-6">
@@ -351,7 +351,7 @@ const HerramientasPage = () => {
                       value={formData.ubicacion}
                       onChange={(e) => setFormData({ ...formData, ubicacion: e.target.value })}
                       minLength={2}
-                      maxLength={50}
+                      maxLength={40}
                       required
                     />
                   </div>
@@ -432,6 +432,8 @@ const HerramientasPage = () => {
                     <textarea
                       className="form-control"
                       rows="2"
+                      maxLength={120}
+                      placeholder="Observaciones adicionales (máximo 120 caracteres)..."
                       value={formData.observaciones}
                       onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })}
                     ></textarea>

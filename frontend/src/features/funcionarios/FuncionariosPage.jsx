@@ -212,7 +212,7 @@ const FuncionariosPage = () => {
                       value={formData.cedula}
                       onChange={(e) => setFormData({ ...formData, cedula: e.target.value })}
                       minLength={5}
-                      maxLength={15}
+                      maxLength={12}
                       required
                     />
                   </div>
@@ -225,7 +225,7 @@ const FuncionariosPage = () => {
                       value={formData.nombre}
                       onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                       minLength={2}
-                      maxLength={40}
+                      maxLength={32}
                       required
                     />
                   </div>
@@ -238,7 +238,7 @@ const FuncionariosPage = () => {
                       value={formData.apellido}
                       onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
                       minLength={2}
-                      maxLength={40}
+                      maxLength={32}
                       required
                     />
                   </div>
@@ -251,7 +251,7 @@ const FuncionariosPage = () => {
                       value={formData.cargo}
                       onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
                       minLength={2}
-                      maxLength={50}
+                      maxLength={40}
                       required
                     />
                   </div>
@@ -264,7 +264,7 @@ const FuncionariosPage = () => {
                       value={formData.departamento}
                       onChange={(e) => setFormData({ ...formData, departamento: e.target.value })}
                       minLength={2}
-                      maxLength={50}
+                      maxLength={40}
                     />
                   </div>
                   <div className="col-12 col-md-6">
@@ -276,7 +276,7 @@ const FuncionariosPage = () => {
                       value={formData.telefono}
                       onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
                       minLength={7}
-                      maxLength={15}
+                      maxLength={12}
                     />
                   </div>
                   <div className="col-12">
@@ -288,7 +288,7 @@ const FuncionariosPage = () => {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       minLength={5}
-                      maxLength={60}
+                      maxLength={50}
                     />
                   </div>
                 </div>

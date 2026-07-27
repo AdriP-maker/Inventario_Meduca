@@ -189,7 +189,8 @@ const DevolucionesPage = () => {
                     <textarea
                       className="form-control"
                       rows="3"
-                      placeholder="Ingrese cualquier detalle adicional..."
+                      maxLength={120}
+                      placeholder="Ingrese cualquier detalle adicional (máximo 120 caracteres)..."
                       value={observaciones}
                       onChange={(e) => setObservaciones(e.target.value)}
                     ></textarea>

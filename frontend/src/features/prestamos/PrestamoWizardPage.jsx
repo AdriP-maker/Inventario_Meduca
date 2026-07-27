@@ -213,7 +213,7 @@ const PrestamoWizardPage = () => {
                   value={escuelaProyecto}
                   onChange={(e) => setEscuelaProyecto(e.target.value)}
                   minLength={3}
-                  maxLength={100}
+                  maxLength={80}
                   required
                 />
               </div>
@@ -235,9 +235,9 @@ const PrestamoWizardPage = () => {
                 <textarea
                   className="form-control"
                   rows="3"
-                  placeholder="Describa el trabajo a realizar o el estado de las herramientas al entregar..."
+                  placeholder="Describa el trabajo a realizar o estado al entregar (máximo 120 caracteres)..."
                   value={observaciones}
-                  maxLength={200}
+                  maxLength={120}
                   onChange={(e) => setObservaciones(e.target.value)}
                 ></textarea>
               </div>
