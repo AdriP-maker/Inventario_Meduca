@@ -379,11 +379,11 @@ const PrestamoWizardPage = () => {
               style={{ background: '#1a5bb8', borderColor: '#1a5bb8' }}
               onClick={() => {
                 if (step === 1 && !selectedFuncionario) return toast.warning('Debe seleccionar un funcionario responsable del préstamo.');
-                if (step === 2 && selectedHerramientas.length === 0) return toast.warning('Debe seleccionar al menos una herramienta disponible.');
+                if (step === 2 && selectedHerramientasIds.length === 0) return toast.warning('Debe seleccionar al menos una herramienta disponible.');
                 if (step === 3) {
                   const err = validators.validatePrestamo({
                     funcionario_id: selectedFuncionario?.id,
-                    herramientas_ids: selectedHerramientas,
+                    herramientas_ids: selectedHerramientasIds,
                     escuela_proyecto: escuelaProyecto,
                     fecha_devolucion_estimada: fechaDevolucion,
                     observaciones: observaciones

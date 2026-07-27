@@ -180,9 +180,6 @@ export const supabaseApi = {
   // Herramientas
   async getHerramientas(search = '', estado = null) {
     let query = supabase.from('herramientas').select('*').order('id', { ascending: false });
-    if (estado && estado.trim() !== '') {
-      query = query.eq('estado', estado.trim());
-    }
     if (search && search.trim() !== '') {
       const q = search.trim();
       query = query.or(`nombre.ilike.%${q}%,codigo.ilike.%${q}%,marca.ilike.%${q}%,modelo.ilike.%${q}%`);
@@ -190,7 +187,37 @@ export const supabaseApi = {
 
     const { data, error } = await query;
     if (error) throw error;
-    return { data: { success: true, data: data || [] } };
+
+    let list = (data || []).map(h => {
+      const stotal = parseInt(h.stock_total ?? 1, 10);
+      const sprest = parseInt(h.stock_prestado ?? (h.estado === 'Prestado' ? 1 : 0), 10);
+      const sdan = parseInt(h.stock_danado ?? (h.estado === 'Dañado' ? 1 : 0), 10);
+      const calcDisp = Math.max(0, stotal - sprest - sdan);
+      const dbDisp = parseInt(h.stock_disponible ?? calcDisp, 10);
+      const effectiveDisp = (dbDisp === 0 && (h.estado === 'Disponible' || !h.estado) && sprest === 0 && sdan === 0) ? calcDisp : dbDisp;
+
+      return {
+        ...h,
+        stock_total: stotal,
+        stock_prestado: sprest,
+        stock_danado: sdan,
+        stock_disponible: effectiveDisp,
+        estado_display: (effectiveDisp <= 0 && sprest > 0) ? 'Agotado' : (h.estado || 'Disponible')
+      };
+    });
+
+    if (estado && estado.trim() !== '') {
+      const est = estado.trim();
+      if (est === 'Disponible') {
+        list = list.filter(h => h.stock_disponible > 0 && h.estado !== 'Mantenimiento' && h.estado !== 'Dañado');
+      } else if (est === 'Agotado') {
+        list = list.filter(h => h.stock_disponible <= 0 || h.estado === 'Agotado');
+      } else {
+        list = list.filter(h => h.estado === est);
+      }
+    }
+
+    return { data: { success: true, data: list } };
   },
 
   async createHerramienta(formData) {
