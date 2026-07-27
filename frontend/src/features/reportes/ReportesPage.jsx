@@ -135,30 +135,35 @@ const ReportesPage = () => {
         });
       }
 
-      // Row 2: Header Title
+      // Row 2: Header Title (Merged A2:I2)
       const r1 = worksheet.addRow(['REPÚBLICA DE PANAMÁ • MINISTERIO DE EDUCACIÓN']);
+      worksheet.mergeCells('A2:I2');
       r1.font = { bold: true, size: 13, color: { argb: 'FF0A2540' } };
       r1.height = 22;
 
-      // Row 3: Department Subtitle
+      // Row 3: Department Subtitle (Merged A3:I3)
       const r2 = worksheet.addRow(['MEDUCA COCLÉ • DEPARTAMENTO DE MANTENIMIENTO']);
+      worksheet.mergeCells('A3:I3');
       r2.font = { bold: true, size: 11, color: { argb: 'FF1A5BB8' } };
       r2.height = 20;
 
-      // Row 4: Report Name
+      // Row 4: Report Name (Merged A4:I4)
       const r3 = worksheet.addRow([`INFORME OFICIAL DE ANÁLISIS DE DATOS Y MÉTRICAS (${tipo.toUpperCase()})`]);
+      worksheet.mergeCells('A4:I4');
       r3.font = { bold: true, size: 10, color: { argb: 'FF333333' } };
       r3.height = 18;
 
-      // Row 5: Metadata
+      // Row 5: Metadata (Merged A5:I5)
       const r4 = worksheet.addRow([`FECHA DE EMISIÓN: ${new Date().toLocaleDateString()} | GENERADO POR: ${user?.nombre || 'Administrador'}`]);
+      worksheet.mergeCells('A5:I5');
       r4.font = { italic: true, size: 9, color: { argb: 'FF666666' } };
       r4.height = 18;
 
       worksheet.addRow([]);
 
-      // Row 7: Section Header for KPI
+      // Row 7: Section Header for KPI (Merged A7:I7)
       const r7 = worksheet.addRow(['RESUMEN EJECUTIVO (MÉTRICAS Y PUNTOS DE CONTROL)']);
+      worksheet.mergeCells('A7:I7');
       r7.font = { bold: true, size: 11, color: { argb: 'FF0A2540' } };
       r7.height = 22;
 
@@ -234,6 +239,7 @@ const ReportesPage = () => {
 
       worksheet.addRow([]);
       const r11 = worksheet.addRow(['DETALLE OPERATIVO DE MÉTRICAS ANALIZADAS']);
+      worksheet.mergeCells('A11:I11');
       r11.font = { bold: true, size: 11, color: { argb: 'FF0A2540' } };
       r11.height = 22;
 
@@ -364,14 +370,19 @@ const ReportesPage = () => {
         right: { style: 'thin', color: { argb: 'FF000000' } }
       };
 
-      // Calculate tight dynamic column widths adapting snugly to content length
-      worksheet.columns.forEach((column) => {
+      // Calculate tight dynamic column widths adapted ONLY to table rows (row >= 12)
+      worksheet.columns.forEach((column, colIdx) => {
         let maxLen = 0;
-        column.eachCell({ includeEmpty: true }, (cell) => {
-          const val = cell.value ? cell.value.toString() : '';
-          if (val.length > maxLen) maxLen = val.length;
+        worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+          if (rowNumber >= 12) {
+            const cell = row.getCell(colIdx + 1);
+            if (cell && cell.value) {
+              const val = cell.value.toString();
+              if (val.length > maxLen) maxLen = val.length;
+            }
+          }
         });
-        column.width = Math.max(maxLen + 3, 12);
+        column.width = Math.max(maxLen + 4, 13);
       });
 
       // Lock all cells & protect worksheet against editing in Microsoft Excel
