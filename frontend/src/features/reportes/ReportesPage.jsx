@@ -119,104 +119,154 @@ const ReportesPage = () => {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Informe_MEDUCA');
 
-      // 1. Header Title Rows
-      const r1 = worksheet.addRow(['REPÚBLICA DE PANAMÁ • MINISTERIO DE EDUCACIÓN - MEDUCA COCLÉ']);
-      r1.font = { bold: true, size: 13, color: { argb: 'FF0A2540' } };
+      // Row 1: Reserved for Government Logo
+      const rLogo = worksheet.addRow(['']);
+      rLogo.height = 42;
 
-      const r2 = worksheet.addRow([`INFORME DE ANÁLISIS DE DATOS Y MÉTRICAS DE INVENTARIO Y PRÉSTAMOS (${tipo.toUpperCase()})`]);
-      r2.font = { bold: true, size: 11, color: { argb: 'FF1A5BB8' } };
-
-      const r3 = worksheet.addRow([`FECHA DE GENERACIÓN: ${new Date().toLocaleDateString()} | GENERADO POR: ${user?.nombre || 'Administrador'}`]);
-      r3.font = { italic: true, size: 9, color: { argb: 'FF555555' } };
-
-      // Add Logo Image to Excel Worksheet at top right
+      // Add Logo Image at the top above title text
       if (LOGO_MEDUCA_BASE64) {
         const logoId = workbook.addImage({
           base64: LOGO_MEDUCA_BASE64.replace(/^data:image\/png;base64,/, ''),
           extension: 'png',
         });
         worksheet.addImage(logoId, {
-          tl: { col: 5, row: 0 },
-          ext: { width: 160, height: 50 }
+          tl: { col: 0, row: 0 },
+          ext: { width: 180, height: 42 }
         });
       }
 
-      worksheet.addRow([]);
+      // Row 2: Header Title
+      const r1 = worksheet.addRow(['REPÚBLICA DE PANAMÁ • MINISTERIO DE EDUCACIÓN']);
+      r1.font = { bold: true, size: 13, color: { argb: 'FF0A2540' } };
+      r1.height = 22;
 
-      // 2. Resumen Ejecutivo KPI Block
-      const r5 = worksheet.addRow(['RESUMEN EJECUTIVO (BASADO EN DATOS)']);
-      r5.font = { bold: true, size: 11, color: { argb: 'FF333333' } };
+      // Row 3: Department Subtitle
+      const r2 = worksheet.addRow(['MEDUCA COCLÉ • DEPARTAMENTO DE MANTENIMIENTO']);
+      r2.font = { bold: true, size: 11, color: { argb: 'FF1A5BB8' } };
+      r2.height = 20;
 
-      const kpiHead = worksheet.addRow([
-        'TOTAL PUNTOS DE DATOS',
-        'ALTA PRIORIDAD (CRÍTICOS)',
-        'MÉTRICAS NORMALES',
-        'MÉTRICAS PENDIENTES'
-      ]);
-      kpiHead.height = 24;
-      kpiHead.eachCell((cell, colIdx) => {
-        cell.font = { bold: true, size: 9 };
-        cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-      });
+      // Row 4: Report Name
+      const r3 = worksheet.addRow([`INFORME OFICIAL DE ANÁLISIS DE DATOS Y MÉTRICAS (${tipo.toUpperCase()})`]);
+      r3.font = { bold: true, size: 10, color: { argb: 'FF333333' } };
+      r3.height = 18;
 
-      kpiHead.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
-      kpiHead.getCell(1).font = { bold: true, color: { argb: 'FF15803D' }, size: 9 };
-
-      kpiHead.getCell(2).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
-      kpiHead.getCell(2).font = { bold: true, color: { argb: 'FFB91C1C' }, size: 9 };
-
-      kpiHead.getCell(3).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } };
-      kpiHead.getCell(3).font = { bold: true, color: { argb: 'FF0369A1' }, size: 9 };
-
-      kpiHead.getCell(4).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
-      kpiHead.getCell(4).font = { bold: true, color: { argb: 'FFA16207' }, size: 9 };
-
-      const kpiVal = worksheet.addRow([totalRegistros, criticosCount, normalesCount, pendientesCount]);
-      kpiVal.height = 28;
-      kpiVal.eachCell((cell) => {
-        cell.alignment = { horizontal: 'center', vertical: 'middle' };
-      });
-
-      kpiVal.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
-      kpiVal.getCell(1).font = { bold: true, size: 14, color: { argb: 'FF15803D' } };
-
-      kpiVal.getCell(2).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
-      kpiVal.getCell(2).font = { bold: true, size: 14, color: { argb: 'FFB91C1C' } };
-
-      kpiVal.getCell(3).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } };
-      kpiVal.getCell(3).font = { bold: true, size: 14, color: { argb: 'FF0369A1' } };
-
-      kpiVal.getCell(4).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
-      kpiVal.getCell(4).font = { bold: true, size: 14, color: { argb: 'FFA16207' } };
+      // Row 5: Metadata
+      const r4 = worksheet.addRow([`FECHA DE EMISIÓN: ${new Date().toLocaleDateString()} | GENERADO POR: ${user?.nombre || 'Administrador'}`]);
+      r4.font = { italic: true, size: 9, color: { argb: 'FF666666' } };
+      r4.height = 18;
 
       worksheet.addRow([]);
-      const r9 = worksheet.addRow(['DETALLE DE ANÁLISIS DE MÉTRICAS']);
-      r9.font = { bold: true, size: 11, color: { argb: 'FF333333' } };
+
+      // Row 7: Section Header for KPI
+      const r7 = worksheet.addRow(['RESUMEN EJECUTIVO (MÉTRICAS Y PUNTOS DE CONTROL)']);
+      r7.font = { bold: true, size: 11, color: { argb: 'FF0A2540' } };
+      r7.height = 22;
+
+      // KPI Card 1: Total Data Points
+      worksheet.mergeCells('A8:B8');
+      worksheet.mergeCells('A9:B9');
+      const cellK1H = worksheet.getCell('A8');
+      cellK1H.value = 'TOTAL REGISTROS';
+      cellK1H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
+      cellK1H.font = { bold: true, size: 9, color: { argb: 'FF15803D' } };
+      cellK1H.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      const cellK1V = worksheet.getCell('A9');
+      cellK1V.value = totalRegistros;
+      cellK1V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
+      cellK1V.font = { bold: true, size: 16, color: { argb: 'FF15803D' } };
+      cellK1V.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      // KPI Card 2: Critical Items
+      worksheet.mergeCells('C8:D8');
+      worksheet.mergeCells('C9:D9');
+      const cellK2H = worksheet.getCell('C8');
+      cellK2H.value = 'ALTA PRIORIDAD (CRÍTICOS)';
+      cellK2H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
+      cellK2H.font = { bold: true, size: 9, color: { argb: 'FFB91C1C' } };
+      cellK2H.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      const cellK2V = worksheet.getCell('C9');
+      cellK2V.value = criticosCount;
+      cellK2V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
+      cellK2V.font = { bold: true, size: 16, color: { argb: 'FFB91C1C' } };
+      cellK2V.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      // KPI Card 3: Normal Metrics
+      worksheet.mergeCells('E8:F8');
+      worksheet.mergeCells('E9:F9');
+      const cellK3H = worksheet.getCell('E8');
+      cellK3H.value = 'DISPONIBLES / NORMALES';
+      cellK3H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } };
+      cellK3H.font = { bold: true, size: 9, color: { argb: 'FF0369A1' } };
+      cellK3H.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      const cellK3V = worksheet.getCell('E9');
+      cellK3V.value = normalesCount;
+      cellK3V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } };
+      cellK3V.font = { bold: true, size: 16, color: { argb: 'FF0369A1' } };
+      cellK3V.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      // KPI Card 4: Pending / In Transit
+      worksheet.mergeCells('G8:H8');
+      worksheet.mergeCells('G9:H9');
+      const cellK4H = worksheet.getCell('G8');
+      cellK4H.value = 'PENDIENTES / TRÁNSITO';
+      cellK4H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
+      cellK4H.font = { bold: true, size: 9, color: { argb: 'FFA16207' } };
+      cellK4H.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      const cellK4V = worksheet.getCell('G9');
+      cellK4V.value = pendientesCount;
+      cellK4V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
+      cellK4V.font = { bold: true, size: 16, color: { argb: 'FFA16207' } };
+      cellK4V.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      // Set borders for KPI cards
+      ['A8', 'A9', 'B8', 'B9', 'C8', 'C9', 'D8', 'D9', 'E8', 'E9', 'F8', 'F9', 'G8', 'G9', 'H8', 'H9'].forEach(pos => {
+        worksheet.getCell(pos).border = {
+          top: { style: 'thin', color: { argb: 'FFCCCCCC' } },
+          bottom: { style: 'thin', color: { argb: 'FFCCCCCC' } },
+          left: { style: 'thin', color: { argb: 'FFCCCCCC' } },
+          right: { style: 'thin', color: { argb: 'FFCCCCCC' } }
+        };
+      });
+
+      worksheet.addRow([]);
+      const r11 = worksheet.addRow(['DETALLE OPERATIVO DE MÉTRICAS ANALIZADAS']);
+      r11.font = { bold: true, size: 11, color: { argb: 'FF0A2540' } };
+      r11.height = 22;
 
       // Table Header Row (Dark Green #0D522C)
       let tableHeaders = [];
       if (tipo === 'prestamos') {
-        tableHeaders = ['CÓDIGO PRÉSTAMO', 'FUNCIONARIO SOLICITANTE', 'CÉDULA', 'ESCUELA / PROYECTO', 'FECHA PRÉSTAMO', 'FECHA DEV. ESTIMADA', 'ESTADO / PRIORIDAD', 'HERRAMIENTAS INVOLUCRADAS', 'REGISTRADO POR'];
+        tableHeaders = ['CÓDIGO PRÉSTAMO', 'FUNCIONARIO SOLICITANTE', 'CÉDULA', 'ESCUELA / PROYECTO', 'FECHA PRÉSTAMO', 'FECHA DEV. ESTIMADA', 'ESTADO', 'HERRAMIENTAS INVOLUCRADAS', 'REGISTRADO POR'];
       } else if (tipo === 'herramientas') {
-        tableHeaders = ['CÓDIGO HERRAMIENTA', 'NOMBRE HERRAMIENTA', 'MARCA', 'MODELO', 'NÚMERO DE SERIE', 'UBICACIÓN EN BODEGA', 'ESTADO / PRIORIDAD', 'OBSERVACIONES'];
+        tableHeaders = ['CÓDIGO HERRAMIENTA', 'NOMBRE HERRAMIENTA', 'MARCA', 'MODELO', 'NÚMERO DE SERIE', 'UBICACIÓN EN BODEGA', 'ESTADO', 'OBSERVACIONES'];
       } else if (tipo === 'devoluciones') {
         tableHeaders = ['CÓDIGO PRÉSTAMO', 'FUNCIONARIO', 'ESCUELA / PROYECTO', 'FECHA DEVOLUCIÓN', 'REGISTRADO POR', 'OBSERVACIONES'];
       } else if (tipo === 'funcionarios') {
-        tableHeaders = ['CÉDULA', 'NOMBRE COMPLETO', 'CARGO', 'DEPARTAMENTO', 'TELÉFONO', 'CORREO ELECTRÓNICO', 'ESTADO / PRIORIDAD'];
+        tableHeaders = ['CÉDULA', 'NOMBRE COMPLETO', 'CARGO', 'DEPARTAMENTO', 'TELÉFONO', 'CORREO ELECTRÓNICO', 'ESTADO'];
       }
 
       const thRow = worksheet.addRow(tableHeaders);
-      thRow.height = 24;
+      thRow.height = 26;
       thRow.eachCell((cell) => {
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0D522C' } };
         cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10 };
         cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        cell.border = {
+          top: { style: 'medium', color: { argb: 'FF0A3B1F' } },
+          bottom: { style: 'medium', color: { argb: 'FF0A3B1F' } },
+          left: { style: 'thin', color: { argb: 'FF1E6B3E' } },
+          right: { style: 'thin', color: { argb: 'FF1E6B3E' } }
+        };
       });
 
-      // Data Rows
-      reporteData.forEach((item) => {
+      // Data Rows with Zebra Striping & Status Color Highlighting
+      reporteData.forEach((item, idx) => {
         let rowValues = [];
-        let stText = item.estado ? `[${item.estado.toUpperCase()}]` : '[NORMAL]';
+        let stText = (item.estado_devolucion || item.estado || 'Disponible').toUpperCase();
 
         if (tipo === 'prestamos') {
           rowValues = [
@@ -263,32 +313,61 @@ const ReportesPage = () => {
         }
 
         const dataRow = worksheet.addRow(rowValues);
+        dataRow.height = 22;
+        const isEven = idx % 2 === 0;
+        const rowBg = isEven ? 'FFFFFFFF' : 'FFF9FAFB';
+
         dataRow.eachCell((cell, colNumber) => {
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: rowBg } };
           cell.border = {
-            top: { style: 'thin', color: { argb: 'FFD0D0D0' } },
-            bottom: { style: 'thin', color: { argb: 'FFD0D0D0' } },
-            left: { style: 'thin', color: { argb: 'FFD0D0D0' } },
-            right: { style: 'thin', color: { argb: 'FFD0D0D0' } }
+            top: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+            bottom: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+            left: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+            right: { style: 'thin', color: { argb: 'FFE5E7EB' } }
           };
+          cell.alignment = { vertical: 'middle' };
 
           if (colNumber === 1) {
             cell.font = { bold: true, color: { argb: 'FF1A5BB8' } };
+          }
+
+          // Custom Status Cell Highlighting
+          const headerName = tableHeaders[colNumber - 1];
+          if (headerName === 'ESTADO') {
+            cell.alignment = { horizontal: 'center', vertical: 'middle' };
+            if (stText === 'DISPONIBLE' || stText === 'DEVUELTO' || stText === 'ACTIVO' || stText === 'EXCELENTE' || stText === 'BUENO') {
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
+              cell.font = { bold: true, color: { argb: 'FF15803D' }, size: 9 };
+            } else if (stText === 'PRESTADO' || stText === 'PENDIENTE' || stText === 'REGULAR') {
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
+              cell.font = { bold: true, color: { argb: 'FFA16207' }, size: 9 };
+            } else if (stText === 'DAÑADO' || stText === 'CON DAÑO' || stText === 'INACTIVO' || stText === 'VENCIDO') {
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
+              cell.font = { bold: true, color: { argb: 'FFB91C1C' }, size: 9 };
+            } else if (stText === 'MANTENIMIENTO') {
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF3E0' } };
+              cell.font = { bold: true, color: { argb: 'FFE65100' }, size: 9 };
+            }
           }
         });
       });
 
       // Total Summary Row
-      const totalRow = worksheet.addRow(['RESUMEN DE REGISTROS', `Total Evaluados: ${totalRegistros}`, '', '', '✓ PROCESADO']);
-      totalRow.font = { bold: true, color: { argb: 'FF0D522C' } };
+      worksheet.mergeCells(`A${worksheet.rowCount + 1}:B${worksheet.rowCount + 1}`);
+      const totalRowCell = worksheet.getCell(`A${worksheet.rowCount}`);
+      totalRowCell.value = `TOTAL REGISTROS: ${totalRegistros}`;
+      totalRowCell.font = { bold: true, color: { argb: 'FF0D522C' }, size: 10 };
+      totalRowCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8F5E9' } };
+      totalRowCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-      // Calculate dynamic column widths to prevent truncation
+      // Calculate dynamic column widths with ample padding to prevent any truncation
       worksheet.columns.forEach((column) => {
         let maxLen = 0;
         column.eachCell({ includeEmpty: true }, (cell) => {
           const val = cell.value ? cell.value.toString() : '';
           if (val.length > maxLen) maxLen = val.length;
         });
-        column.width = Math.max(maxLen + 5, 20);
+        column.width = Math.max(maxLen + 6, 20);
       });
 
       // Lock all cells & protect worksheet against editing in Microsoft Excel
