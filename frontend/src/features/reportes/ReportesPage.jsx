@@ -119,49 +119,50 @@ const ReportesPage = () => {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Informe_MEDUCA');
 
-      // Row 1: Reserved for Large Government Logo
+      // Row 1: Reserved for Large Government Logo (Merged A1:H1)
       const rLogo = worksheet.addRow(['']);
-      rLogo.height = 62;
+      worksheet.mergeCells('A1:H1');
+      rLogo.height = 64;
 
-      // Add Centered Logo Image above title text
+      // Add Centered Logo Image over merged A1:H1 cell
       if (LOGO_MEDUCA_BASE64) {
         const logoId = workbook.addImage({
           base64: LOGO_MEDUCA_BASE64.replace(/^data:image\/png;base64,/, ''),
           extension: 'png',
         });
         worksheet.addImage(logoId, {
-          tl: { col: 3.25, row: 0.1 },
+          tl: { col: 2.85, row: 0.1 },
           ext: { width: 240, height: 58 }
         });
       }
 
-      // Row 2: Header Title (Merged A2:I2)
+      // Row 2: Header Title (Merged A2:H2)
       const r1 = worksheet.addRow(['REPÚBLICA DE PANAMÁ • MINISTERIO DE EDUCACIÓN']);
-      worksheet.mergeCells('A2:I2');
+      worksheet.mergeCells('A2:H2');
       const cA2 = worksheet.getCell('A2');
       cA2.font = { bold: true, size: 13, color: { argb: 'FF0A2540' } };
       cA2.alignment = { vertical: 'middle', horizontal: 'center' };
       r1.height = 24;
 
-      // Row 3: Department Subtitle (Merged A3:I3)
+      // Row 3: Department Subtitle (Merged A3:H3)
       const r2 = worksheet.addRow(['MEDUCA COCLÉ • DEPARTAMENTO DE MANTENIMIENTO']);
-      worksheet.mergeCells('A3:I3');
+      worksheet.mergeCells('A3:H3');
       const cA3 = worksheet.getCell('A3');
       cA3.font = { bold: true, size: 11, color: { argb: 'FF1A5BB8' } };
       cA3.alignment = { vertical: 'middle', horizontal: 'center' };
       r2.height = 22;
 
-      // Row 4: Report Name (Merged A4:I4)
+      // Row 4: Report Name (Merged A4:H4)
       const r3 = worksheet.addRow([`INFORME OFICIAL DE ANÁLISIS DE DATOS Y MÉTRICAS (${tipo.toUpperCase()})`]);
-      worksheet.mergeCells('A4:I4');
+      worksheet.mergeCells('A4:H4');
       const cA4 = worksheet.getCell('A4');
       cA4.font = { bold: true, size: 10, color: { argb: 'FF333333' } };
       cA4.alignment = { vertical: 'middle', horizontal: 'center' };
       r3.height = 20;
 
-      // Row 5: Metadata (Merged A5:I5)
+      // Row 5: Metadata (Merged A5:H5)
       const r4 = worksheet.addRow([`FECHA DE EMISIÓN: ${new Date().toLocaleDateString('es-PA')} | GENERADO POR: ${user?.nombre || 'Administrador'}`]);
-      worksheet.mergeCells('A5:I5');
+      worksheet.mergeCells('A5:H5');
       const cA5 = worksheet.getCell('A5');
       cA5.font = { italic: true, size: 9, color: { argb: 'FF666666' } };
       cA5.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -169,9 +170,9 @@ const ReportesPage = () => {
 
       worksheet.addRow([]);
 
-      // Row 7: Section Header for KPI (Merged A7:I7)
+      // Row 7: Section Header for KPI (Merged A7:H7)
       const r7 = worksheet.addRow(['RESUMEN EJECUTIVO (MÉTRICAS Y PUNTOS DE CONTROL)']);
-      worksheet.mergeCells('A7:I7');
+      worksheet.mergeCells('A7:H7');
       const cA7 = worksheet.getCell('A7');
       cA7.font = { bold: true, size: 11, color: { argb: 'FF0A2540' } };
       cA7.alignment = { vertical: 'middle', horizontal: 'center' };
