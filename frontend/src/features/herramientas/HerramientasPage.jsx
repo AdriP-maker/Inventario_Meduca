@@ -168,17 +168,23 @@ const HerramientasPage = () => {
     }
   };
 
+  const getToolStock = (h) => {
+    const total = parseInt(h.stock_total ?? 1, 10);
+    const prest = parseInt(h.stock_prestado ?? (h.estado === 'Prestado' ? 1 : 0), 10);
+    const dan = parseInt(h.stock_danado ?? (h.estado === 'Dañado' ? 1 : 0), 10);
+    const disp = parseInt(h.stock_disponible ?? (h.estado === 'Disponible' ? Math.max(0, total - prest - dan) : 0), 10);
+    return { total, disp, prest, dan };
+  };
+
   const renderBadge = (h) => {
-    const disp = parseInt(h.stock_disponible || 0, 10);
-    const prest = parseInt(h.stock_prestado || 0, 10);
-    const dan = parseInt(h.stock_danado || 0, 10);
+    const { total, disp, prest, dan } = getToolStock(h);
 
     if (disp <= 0 && prest > 0) {
       return (
         <span 
           className="badge-status badge-naranja cursor-pointer shadow-sm" 
           onClick={() => handleOpenDisponibilidad(h.id)}
-          title="Toca para ver detalle explicativo"
+          title="Toca para ver detalle explicativo ('Manzanas y Peras')"
         >
           <AlertTriangle size={13} /> Sin Stock / En Préstamo
         </span>
@@ -190,7 +196,11 @@ const HerramientasPage = () => {
     if (h.estado === 'Mantenimiento') {
       return <span className="badge-status badge-mantenimiento">Mantenimiento</span>;
     }
-    return <span className="badge-status badge-disponible">Disponible ({disp})</span>;
+    return (
+      <span className="badge-status badge-disponible">
+        Disponible {total > 1 ? `(${disp}/${total})` : ''}
+      </span>
+    );
   };
 
   return (
@@ -256,40 +266,42 @@ const HerramientasPage = () => {
                   <td colSpan="6" className="text-center py-4 text-muted">No se encontraron herramientas.</td>
                 </tr>
               ) : (
-                herramientas.map((h) => (
-                  <tr key={h.id}>
-                    <td className="fw-bold text-primary">{h.codigo}</td>
-                    <td>
-                      <div className="d-flex align-items-center gap-3">
-                        <img
-                          src={h.foto_url || 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=100'}
-                          alt={h.nombre}
-                          className="rounded shadow-sm cursor-pointer"
-                          onClick={() => handleOpenDisponibilidad(h.id)}
-                          style={{ width: '44px', height: '44px', objectFit: 'cover' }}
-                        />
-                        <div>
-                          <div 
-                            className="fw-bold cursor-pointer text-dark hover-primary"
+                herramientas.map((h) => {
+                  const stock = getToolStock(h);
+                  return (
+                    <tr key={h.id}>
+                      <td className="fw-bold text-primary">{h.codigo}</td>
+                      <td>
+                        <div className="d-flex align-items-center gap-3">
+                          <img
+                            src={h.foto_url || 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=100'}
+                            alt={h.nombre}
+                            className="rounded shadow-sm cursor-pointer"
                             onClick={() => handleOpenDisponibilidad(h.id)}
-                            title="Ver estado de disponibilidad ('Manzanas y Peras')"
-                          >
-                            {h.nombre}
+                            style={{ width: '44px', height: '44px', objectFit: 'cover' }}
+                          />
+                          <div>
+                            <div 
+                              className="fw-bold cursor-pointer text-dark hover-primary"
+                              onClick={() => handleOpenDisponibilidad(h.id)}
+                              title="Ver estado de disponibilidad ('Manzanas y Peras')"
+                            >
+                              {h.nombre}
+                            </div>
+                            <div className="text-muted" style={{ fontSize: '0.8rem' }}>{h.modelo || 'Sin modelo'}</div>
                           </div>
-                          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{h.modelo || 'Sin modelo'}</div>
                         </div>
-                      </div>
-                    </td>
-                    <td>{h.marca}</td>
-                    <td>
-                      <div className="d-flex align-items-center gap-1 font-monospace" style={{ fontSize: '0.85rem' }}>
-                        <span className="badge bg-secondary" title="Stock Total">{h.stock_total || 1} Total</span>
-                        <span className="badge bg-success" title="Disponibles">{h.stock_disponible ?? 1} Disp</span>
-                        <span className="badge bg-warning text-dark" title="Prestados">{h.stock_prestado || 0} Prest</span>
-                        <span className="badge bg-danger" title="Dañados">{h.stock_danado || 0} Dañ</span>
-                      </div>
-                    </td>
-                    <td>{renderBadge(h)}</td>
+                      </td>
+                      <td>{h.marca}</td>
+                      <td>
+                        <div className="d-flex align-items-center gap-1 font-monospace" style={{ fontSize: '0.85rem' }}>
+                          <span className="badge bg-secondary" title="Stock Total">{stock.total} Total</span>
+                          <span className="badge bg-success" title="Disponibles">{stock.disp} Disp</span>
+                          <span className="badge bg-warning text-dark" title="Prestados">{stock.prest} Prest</span>
+                          <span className="badge bg-danger" title="Dañados">{stock.dan} Dañ</span>
+                        </div>
+                      </td>
+                      <td>{renderBadge(h)}</td>
                     <td className="text-center">
                       <button onClick={() => handleOpenDisponibilidad(h.id)} className="btn btn-sm btn-outline-info p-1 me-1" title="Ver Estado de Disponibilidad ('Manzanas y Peras')">
                         <Info size={16} />
@@ -302,8 +314,9 @@ const HerramientasPage = () => {
                       </button>
                     </td>
                   </tr>
-                ))
-              )}
+                );
+              })
+            )}
             </tbody>
           </table>
         </div>
