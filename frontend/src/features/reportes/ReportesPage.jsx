@@ -131,7 +131,7 @@ const ReportesPage = () => {
           extension: 'png',
         });
         worksheet.addImage(logoId, {
-          tl: { col: 3.45, row: 0.1 },
+          tl: { col: 4.3, row: 0.1 },
           ext: { width: 240, height: 58 }
         });
       }
