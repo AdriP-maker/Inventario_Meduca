@@ -30,6 +30,8 @@ class DevolucionController {
         $prestamo_id = (int)($body['prestamo_id'] ?? 0);
         $observaciones = trim($body['observaciones'] ?? '');
         $estado_herramienta_devolucion = trim($body['estado_devolucion'] ?? 'Bueno');
+        $cantidad_danada = max(0, (int)($body['cantidad_danada'] ?? ($estado_herramienta_devolucion === 'Con Daño' ? 1 : 0)));
+        $descripcion_dano = trim($body['descripcion_dano'] ?? $observaciones ?: 'Daño reportado durante la recepción del préstamo');
 
         if (!$prestamo_id) {
             Response::error('Debe proporcionar el ID del préstamo a devolver.', 400);
@@ -60,17 +62,51 @@ class DevolucionController {
             $stmtDev->execute(['pid' => $prestamo_id, 'uid' => $user['id'], 'obs' => $observaciones]);
             $devolucion_id = $pdo->lastInsertId();
 
-            // Get tools associated with this loan
-            $detalles = Database::query("SELECT herramienta_id FROM prestamo_detalles WHERE prestamo_id = :pid", ['pid' => $prestamo_id]);
+            // Get tool details associated with this loan
+            $detalles = Database::query("SELECT * FROM prestamo_detalles WHERE prestamo_id = :pid", ['pid' => $prestamo_id]);
 
             $stmtUpdateHerramienta = $pdo->prepare("
-                UPDATE herramientas SET estado = :estado WHERE id = :hid
+                UPDATE herramientas 
+                SET stock_prestado = GREATEST(0, stock_prestado - :cant),
+                    stock_danado = stock_danado + :danado,
+                    stock_disponible = stock_disponible + (:cant - :danado),
+                    estado = CASE 
+                        WHEN stock_disponible + (:cant - :danado) > 0 THEN 'Disponible'
+                        WHEN :danado > 0 THEN 'Dañado'
+                        ELSE estado 
+                    END
+                WHERE id = :hid
             ");
 
-            $nuevoEstadoHerramienta = ($estado_herramienta_devolucion === 'Con Daño') ? 'Dañado' : 'Disponible';
+            $stmtNotaDano = $pdo->prepare("
+                INSERT INTO notas_dano (codigo_nota, prestamo_id, funcionario_id, herramienta_id, cantidad, descripcion_dano, usuario_registro_id)
+                VALUES (:codigo, :pid, :fid, :hid, :cant, :desc, :uid)
+            ");
 
             foreach ($detalles as $d) {
-                $stmtUpdateHerramienta->execute(['estado' => $nuevoEstadoHerramienta, 'hid' => $d['herramienta_id']]);
+                $hid = (int)$d['herramienta_id'];
+                $cantPrestada = max(1, (int)($d['cantidad'] ?? 1));
+                $cantDanadaDetalle = ($estado_herramienta_devolucion === 'Con Daño') ? min($cantPrestada, max(1, $cantidad_danada)) : 0;
+
+                $stmtUpdateHerramienta->execute([
+                    'cant' => $cantPrestada,
+                    'danado' => $cantDanadaDetalle,
+                    'hid' => $hid
+                ]);
+
+                // Create official MEDUCA Damage Note if damaged
+                if ($cantDanadaDetalle > 0) {
+                    $codigoNota = 'NOT-DAN-' . date('Ymd') . '-' . rand(100, 999);
+                    $stmtNotaDano->execute([
+                        'codigo' => $codigoNota,
+                        'pid' => $prestamo_id,
+                        'fid' => $prestamo['funcionario_id'],
+                        'hid' => $hid,
+                        'cant' => $cantDanadaDetalle,
+                        'desc' => $descripcion_dano,
+                        'uid' => $user['id']
+                    ]);
+                }
             }
 
             // Update details return state
@@ -88,7 +124,7 @@ class DevolucionController {
                     'uid' => $user['id'],
                     'unombre' => $user['nombre'],
                     'eid' => $devolucion_id,
-                    'detalle' => "Devolución efectuada para el préstamo " . $prestamo['codigo_prestamo']
+                    'detalle' => "Devolución efectuada para el préstamo " . $prestamo['codigo_prestamo'] . ($estado_herramienta_devolucion === 'Con Daño' ? " (Con reporte de daño)" : "")
                 ]
             );
 

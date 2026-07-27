@@ -34,6 +34,7 @@ $router->delete('/api/funcionarios/{id}', [Modules\Funcionarios\FuncionarioContr
 
 // 4. Herramientas & Upload Endpoints
 $router->get('/api/herramientas', [Modules\Herramientas\HerramientaController::class, 'index']);
+$router->get('/api/herramientas/{id}/disponibilidad', [Modules\Herramientas\HerramientaController::class, 'getDisponibilidad']);
 $router->post('/api/herramientas', [Modules\Herramientas\HerramientaController::class, 'create']);
 $router->put('/api/herramientas/{id}', [Modules\Herramientas\HerramientaController::class, 'update']);
 $router->delete('/api/herramientas/{id}', [Modules\Herramientas\HerramientaController::class, 'delete']);
@@ -43,9 +44,12 @@ $router->post('/api/upload', [Modules\Upload\UploadController::class, 'upload'])
 $router->get('/api/prestamos', [Modules\Prestamos\PrestamoController::class, 'index']);
 $router->post('/api/prestamos', [Modules\Prestamos\PrestamoController::class, 'create']);
 
-// 6. Devoluciones Endpoints
+// 6. Devoluciones & Notas de Daño Endpoints
 $router->get('/api/devoluciones', [Modules\Devoluciones\DevolucionController::class, 'index']);
 $router->post('/api/devoluciones/registrar', [Modules\Devoluciones\DevolucionController::class, 'registrar']);
+$router->get('/api/notas-dano', [Modules\Devoluciones\NotaDanoController::class, 'index']);
+$router->get('/api/notas-dano/{id}', [Modules\Devoluciones\NotaDanoController::class, 'show']);
+$router->put('/api/notas-dano/{id}/estado', [Modules\Devoluciones\NotaDanoController::class, 'updateEstado']);
 
 // 7. Reportes Endpoints
 $router->get('/api/reportes/generar', [Modules\Reportes\ReporteController::class, 'generar']);

@@ -67,6 +67,10 @@ CREATE TABLE herramientas (
   marca VARCHAR(100) NOT NULL,
   modelo VARCHAR(100),
   numero_serie VARCHAR(100),
+  stock_total INT DEFAULT 1,
+  stock_disponible INT DEFAULT 1,
+  stock_prestado INT DEFAULT 0,
+  stock_danado INT DEFAULT 0,
   estado estado_herramienta DEFAULT 'Disponible',
   ubicacion VARCHAR(100) DEFAULT 'Bodega Mantenimiento',
   foto_url TEXT,
@@ -94,6 +98,7 @@ CREATE TABLE prestamo_detalles (
   id SERIAL PRIMARY KEY,
   prestamo_id INT NOT NULL REFERENCES prestamos(id) ON DELETE CASCADE,
   herramienta_id INT NOT NULL REFERENCES herramientas(id) ON DELETE CASCADE,
+  cantidad INT DEFAULT 1,
   estado_entrega condicion_herramienta DEFAULT 'Bueno',
   estado_devolucion condicion_herramienta,
   observaciones TEXT
@@ -106,6 +111,20 @@ CREATE TABLE devoluciones (
   usuario_registro_id INT REFERENCES usuarios(id) ON DELETE SET NULL,
   fecha_devolucion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   observaciones TEXT
+);
+
+-- 9. Table: notas_dano (Oficial MEDUCA)
+CREATE TABLE notas_dano (
+  id SERIAL PRIMARY KEY,
+  codigo_nota VARCHAR(30) NOT NULL UNIQUE,
+  prestamo_id INT NOT NULL REFERENCES prestamos(id) ON DELETE CASCADE,
+  funcionario_id INT NOT NULL REFERENCES funcionarios(id) ON DELETE CASCADE,
+  herramienta_id INT NOT NULL REFERENCES herramientas(id) ON DELETE CASCADE,
+  cantidad INT DEFAULT 1,
+  descripcion_dano TEXT NOT NULL,
+  estado_evaluacion VARCHAR(50) DEFAULT 'Pendiente Evaluación',
+  usuario_registro_id INT REFERENCES usuarios(id) ON DELETE SET NULL,
+  fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 9. Table: historial_actividades

@@ -43,15 +43,50 @@ class PrestamoController {
         $escuela_proyecto = trim($body['escuela_proyecto'] ?? '');
         $fecha_devolucion_estimada = trim($body['fecha_devolucion_estimada'] ?? '');
         $observaciones = trim($body['observaciones'] ?? '');
-        $herramientas_ids = $body['herramientas_ids'] ?? [];
+        $rawItems = $body['herramientas_ids'] ?? $body['herramientas'] ?? [];
 
-        if (!$funcionario_id || !$escuela_proyecto || empty($herramientas_ids)) {
+        if (!$funcionario_id || !$escuela_proyecto || empty($rawItems)) {
             Response::error('Debe seleccionar el funcionario, indicar el proyecto/escuela y al menos 1 herramienta.', 400);
+        }
+
+        // Normalize items array
+        $itemsToLoan = [];
+        foreach ($rawItems as $item) {
+            if (is_array($item)) {
+                $hid = (int)($item['id'] ?? 0);
+                $cant = max(1, (int)($item['cantidad'] ?? 1));
+            } else {
+                $hid = (int)$item;
+                $cant = 1;
+            }
+            if ($hid > 0) {
+                $itemsToLoan[] = ['id' => $hid, 'cantidad' => $cant];
+            }
+        }
+
+        if (empty($itemsToLoan)) {
+            Response::error('Lista de herramientas no válida.', 400);
         }
 
         $pdo = Database::getInstance();
         try {
             $pdo->beginTransaction();
+
+            // Validate stock for all requested items
+            foreach ($itemsToLoan as $it) {
+                $stmtCheck = $pdo->prepare("SELECT * FROM herramientas WHERE id = :hid FOR UPDATE");
+                $stmtCheck->execute(['hid' => $it['id']]);
+                $tool = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+                if (!$tool) {
+                    throw new \Exception("La herramienta ID {$it['id']} no existe en catálogo.");
+                }
+
+                $disponible = (int)($tool['stock_disponible'] ?? ($tool['estado'] === 'Disponible' ? 1 : 0));
+                if ($disponible < $it['cantidad']) {
+                    throw new \Exception("Stock insuficiente para \"{$tool['nombre']}\". Disponibles: {$disponible}, Solicitados: {$it['cantidad']}.");
+                }
+            }
 
             $codigo = 'PRE-' . date('Y') . '-' . str_pad((string)rand(100, 999), 3, '0', STR_PAD_LEFT);
 
@@ -70,17 +105,28 @@ class PrestamoController {
             $prestamo_id = $pdo->lastInsertId();
 
             $stmtDetalle = $pdo->prepare("
-                INSERT INTO prestamo_detalles (prestamo_id, herramienta_id, estado_entrega)
-                VALUES (:pid, :hid, 'Bueno')
+                INSERT INTO prestamo_detalles (prestamo_id, herramienta_id, cantidad, estado_entrega)
+                VALUES (:pid, :hid, :cant, 'Bueno')
             ");
 
             $stmtUpdateHerramienta = $pdo->prepare("
-                UPDATE herramientas SET estado = 'Prestado' WHERE id = :hid
+                UPDATE herramientas 
+                SET stock_disponible = GREATEST(0, stock_disponible - :cant),
+                    stock_prestado = stock_prestado + :cant,
+                    estado = CASE WHEN (stock_disponible - :cant) <= 0 THEN 'Prestado' ELSE estado END
+                WHERE id = :hid
             ");
 
-            foreach ($herramientas_ids as $hid) {
-                $stmtDetalle->execute(['pid' => $prestamo_id, 'hid' => (int)$hid]);
-                $stmtUpdateHerramienta->execute(['hid' => (int)$hid]);
+            foreach ($itemsToLoan as $it) {
+                $stmtDetalle->execute([
+                    'pid' => $prestamo_id,
+                    'hid' => $it['id'],
+                    'cant' => $it['cantidad']
+                ]);
+                $stmtUpdateHerramienta->execute([
+                    'hid' => $it['id'],
+                    'cant' => $it['cantidad']
+                ]);
             }
 
             $pdo->commit();
@@ -92,7 +138,7 @@ class PrestamoController {
                     'uid' => $user['id'],
                     'unombre' => $user['nombre'],
                     'eid' => $prestamo_id,
-                    'detalle' => "Préstamo $codigo registrado con " . count($herramientas_ids) . " herramientas"
+                    'detalle' => "Préstamo $codigo registrado con " . count($itemsToLoan) . " tipo(s) de herramienta"
                 ]
             );
 
@@ -101,7 +147,7 @@ class PrestamoController {
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
             }
-            Response::error('Error al registrar el préstamo: ' . $e->getMessage(), 500);
+            Response::error($e->getMessage(), 400);
         }
     }
 }

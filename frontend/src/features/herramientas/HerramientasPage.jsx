@@ -2,9 +2,10 @@ import React, { useEffect, useState, useContext } from 'react';
 import Layout from '../../components/Layout';
 import api from '../../services/api';
 import { ToastContext } from '../../context/ToastContext';
-import { Plus, Search, Edit, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Upload, Image as ImageIcon, Info, AlertTriangle, Layers } from 'lucide-react';
 
 import ConfirmModal from '../../components/ConfirmModal';
+import DisponibilidadModal from '../../components/DisponibilidadModal';
 import { validators } from '../../utils/validators';
 
 const HerramientasPage = () => {
@@ -20,6 +21,11 @@ const HerramientasPage = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [useUrlInput, setUseUrlInput] = useState(false);
 
+  // Availability Modal State ("Manzanas y Peras")
+  const [showDispModal, setShowDispModal] = useState(false);
+  const [dispData, setDispData] = useState(null);
+  const [dispLoading, setDispLoading] = useState(false);
+
   // Delete Modal State
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -31,11 +37,27 @@ const HerramientasPage = () => {
     marca: '',
     modelo: '',
     numero_serie: '',
+    stock_total: 1,
     estado: 'Disponible',
     ubicacion: 'Bodega Mantenimiento',
     foto_url: '',
     observaciones: ''
   });
+
+  const handleOpenDisponibilidad = async (id) => {
+    setShowDispModal(true);
+    setDispLoading(true);
+    try {
+      const res = await api.get(`/herramientas/${id}/disponibilidad`);
+      if (res.data.success) {
+        setDispData(res.data.data);
+      }
+    } catch (err) {
+      toast.error('Ocurrió un error al cargar el detalle de disponibilidad.');
+    } finally {
+      setDispLoading(false);
+    }
+  };
 
   const fetchHerramientas = async () => {
     try {
@@ -146,19 +168,29 @@ const HerramientasPage = () => {
     }
   };
 
-  const renderBadge = (estado) => {
-    switch (estado) {
-      case 'Disponible':
-        return <span className="badge-status badge-disponible">Disponible</span>;
-      case 'Prestado':
-        return <span className="badge-status badge-prestado">Prestado</span>;
-      case 'Mantenimiento':
-        return <span className="badge-status badge-mantenimiento">Mantenimiento</span>;
-      case 'Dañado':
-        return <span className="badge-status badge-danado">Dañado</span>;
-      default:
-        return <span className="badge bg-secondary">{estado}</span>;
+  const renderBadge = (h) => {
+    const disp = parseInt(h.stock_disponible || 0, 10);
+    const prest = parseInt(h.stock_prestado || 0, 10);
+    const dan = parseInt(h.stock_danado || 0, 10);
+
+    if (disp <= 0 && prest > 0) {
+      return (
+        <span 
+          className="badge-status badge-naranja cursor-pointer shadow-sm" 
+          onClick={() => handleOpenDisponibilidad(h.id)}
+          title="Toca para ver detalle explicativo"
+        >
+          <AlertTriangle size={13} /> Sin Stock / En Préstamo
+        </span>
+      );
     }
+    if (disp <= 0 && dan > 0) {
+      return <span className="badge-status badge-danado">Agotado (Dañado)</span>;
+    }
+    if (h.estado === 'Mantenimiento') {
+      return <span className="badge-status badge-mantenimiento">Mantenimiento</span>;
+    }
+    return <span className="badge-status badge-disponible">Disponible ({disp})</span>;
   };
 
   return (
@@ -185,7 +217,8 @@ const HerramientasPage = () => {
             >
               <option value="">Todos los estados</option>
               <option value="Disponible">Disponible</option>
-              <option value="Prestado">Prestado</option>
+              <option value="Agotado">Agotado / Sin Stock</option>
+              <option value="Prestado">En Préstamo</option>
               <option value="Mantenimiento">Mantenimiento</option>
               <option value="Dañado">Dañado</option>
             </select>
@@ -208,7 +241,7 @@ const HerramientasPage = () => {
                 <th>Código</th>
                 <th>Herramienta</th>
                 <th>Marca</th>
-                <th>Ubicación</th>
+                <th>Stock (Total / Disp / Prest / Dañ)</th>
                 <th>Estado</th>
                 <th className="text-center">Acciones</th>
               </tr>
@@ -231,19 +264,36 @@ const HerramientasPage = () => {
                         <img
                           src={h.foto_url || 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=100'}
                           alt={h.nombre}
-                          className="rounded shadow-sm"
+                          className="rounded shadow-sm cursor-pointer"
+                          onClick={() => handleOpenDisponibilidad(h.id)}
                           style={{ width: '44px', height: '44px', objectFit: 'cover' }}
                         />
                         <div>
-                          <div className="fw-bold">{h.nombre}</div>
+                          <div 
+                            className="fw-bold cursor-pointer text-dark hover-primary"
+                            onClick={() => handleOpenDisponibilidad(h.id)}
+                            title="Ver estado de disponibilidad ('Manzanas y Peras')"
+                          >
+                            {h.nombre}
+                          </div>
                           <div className="text-muted" style={{ fontSize: '0.8rem' }}>{h.modelo || 'Sin modelo'}</div>
                         </div>
                       </div>
                     </td>
                     <td>{h.marca}</td>
-                    <td>{h.ubicacion || 'Bodega'}</td>
-                    <td>{renderBadge(h.estado)}</td>
+                    <td>
+                      <div className="d-flex align-items-center gap-1 font-monospace" style={{ fontSize: '0.85rem' }}>
+                        <span className="badge bg-secondary" title="Stock Total">{h.stock_total || 1} Total</span>
+                        <span className="badge bg-success" title="Disponibles">{h.stock_disponible ?? 1} Disp</span>
+                        <span className="badge bg-warning text-dark" title="Prestados">{h.stock_prestado || 0} Prest</span>
+                        <span className="badge bg-danger" title="Dañados">{h.stock_danado || 0} Dañ</span>
+                      </div>
+                    </td>
+                    <td>{renderBadge(h)}</td>
                     <td className="text-center">
+                      <button onClick={() => handleOpenDisponibilidad(h.id)} className="btn btn-sm btn-outline-info p-1 me-1" title="Ver Estado de Disponibilidad ('Manzanas y Peras')">
+                        <Info size={16} />
+                      </button>
                       <button onClick={() => handleOpenModal(h)} className="btn btn-sm btn-outline-primary p-1 me-1" title="Editar">
                         <Edit size={16} />
                       </button>
@@ -343,7 +393,18 @@ const HerramientasPage = () => {
                       <option value="Dañado">Dañado</option>
                     </select>
                   </div>
-                  <div className="col-12 col-md-6">
+                  <div className="col-12 col-md-4">
+                    <label className="form-label fw-semibold">Cantidad Total en Stock *</label>
+                    <input
+                      type="number"
+                      min="1"
+                      className="form-control"
+                      value={formData.stock_total || 1}
+                      onChange={(e) => setFormData({ ...formData, stock_total: Math.max(1, parseInt(e.target.value || 1, 10)) })}
+                      required
+                    />
+                  </div>
+                  <div className="col-12 col-md-4">
                     <label className="form-label fw-semibold">Ubicación *</label>
                     <input
                       type="text"
@@ -462,6 +523,14 @@ const HerramientasPage = () => {
         onConfirm={handleConfirmDelete}
         onCancel={() => setShowDeleteModal(false)}
         submitting={deleting}
+      />
+
+      {/* Explicación Explicativa de Disponibilidad ("Manzanas y Peras") */}
+      <DisponibilidadModal
+        show={showDispModal}
+        onClose={() => setShowDispModal(false)}
+        data={dispData}
+        loading={dispLoading}
       />
     </Layout>
   );

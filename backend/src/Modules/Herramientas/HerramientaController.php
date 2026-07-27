@@ -19,13 +19,31 @@ class HerramientaController {
             $params['s'] = "%$search%";
         }
 
-        if ($estado && in_array($estado, ['Disponible', 'Prestado', 'Mantenimiento', 'Dañado'])) {
-            $sql .= " AND estado = :estado";
-            $params['estado'] = $estado;
+        if ($estado && in_array($estado, ['Disponible', 'Prestado', 'Mantenimiento', 'Dañado', 'Agotado'])) {
+            if ($estado === 'Agotado') {
+                $sql .= " AND (stock_disponible = 0 OR estado = 'Agotado')";
+            } else {
+                $sql .= " AND estado = :estado";
+                $params['estado'] = $estado;
+            }
         }
 
         $sql .= " ORDER BY id DESC";
         $herramientas = Database::query($sql, $params);
+
+        // Calculate dynamic state if column missing or 0 available
+        foreach ($herramientas as &$h) {
+            $h['stock_total'] = (int)($h['stock_total'] ?? 1);
+            $h['stock_disponible'] = (int)($h['stock_disponible'] ?? ($h['estado'] === 'Disponible' ? 1 : 0));
+            $h['stock_prestado'] = (int)($h['stock_prestado'] ?? ($h['estado'] === 'Prestado' ? 1 : 0));
+            $h['stock_danado'] = (int)($h['stock_danado'] ?? ($h['estado'] === 'Dañado' ? 1 : 0));
+
+            if ($h['stock_disponible'] <= 0 && $h['stock_prestado'] > 0) {
+                $h['estado_display'] = 'Agotado';
+            } else {
+                $h['estado_display'] = $h['estado'];
+            }
+        }
 
         Response::success($herramientas, 'Catálogo de herramientas');
     }
@@ -39,6 +57,7 @@ class HerramientaController {
         $marca = trim($body['marca'] ?? '');
         $modelo = trim($body['modelo'] ?? '');
         $numero_serie = trim($body['numero_serie'] ?? '');
+        $stock_total = max(1, (int)($body['stock_total'] ?? $body['cantidad_stock'] ?? 1));
         $estado = trim($body['estado'] ?? 'Disponible');
         $ubicacion = trim($body['ubicacion'] ?? 'Bodega Mantenimiento');
         $foto_url = trim($body['foto_url'] ?? '');
@@ -53,15 +72,23 @@ class HerramientaController {
             Response::error('El código de herramienta ya existe en inventario.', 400);
         }
 
+        $stock_disponible = $stock_total;
+        $stock_prestado = 0;
+        $stock_danado = 0;
+
         Database::execute("
-            INSERT INTO herramientas (codigo, nombre, marca, modelo, numero_serie, estado, ubicacion, foto_url, observaciones)
-            VALUES (:codigo, :nombre, :marca, :modelo, :numero_serie, :estado, :ubicacion, :foto_url, :observaciones)
+            INSERT INTO herramientas (codigo, nombre, marca, modelo, numero_serie, stock_total, stock_disponible, stock_prestado, stock_danado, estado, ubicacion, foto_url, observaciones)
+            VALUES (:codigo, :nombre, :marca, :modelo, :numero_serie, :stotal, :sdisp, :sprest, :sdan, :estado, :ubicacion, :foto_url, :observaciones)
         ", [
             'codigo' => $codigo,
             'nombre' => $nombre,
             'marca' => $marca,
             'modelo' => $modelo,
             'numero_serie' => $numero_serie,
+            'stotal' => $stock_total,
+            'sdisp' => $stock_disponible,
+            'sprest' => $stock_prestado,
+            'sdan' => $stock_danado,
             'estado' => $estado,
             'ubicacion' => $ubicacion,
             'foto_url' => $foto_url ?: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400',
@@ -76,7 +103,7 @@ class HerramientaController {
                 'uid' => $user['id'],
                 'unombre' => $user['nombre'],
                 'eid' => $id,
-                'detalle' => "Herramienta $nombre ($codigo) registrada en inventario"
+                'detalle' => "Herramienta $nombre ($codigo) con stock $stock_total registrada en inventario"
             ]
         );
 
@@ -88,15 +115,26 @@ class HerramientaController {
         $id = (int)($params['id'] ?? 0);
         $body = json_decode(file_get_contents('php://input'), true) ?? [];
 
-        $herramienta = Database::fetch("SELECT id FROM herramientas WHERE id = :id", ['id' => $id]);
+        $herramienta = Database::fetch("SELECT * FROM herramientas WHERE id = :id", ['id' => $id]);
         if (!$herramienta) {
             Response::error('Herramienta no encontrada.', 404);
+        }
+
+        $stock_total = max(1, (int)($body['stock_total'] ?? $body['cantidad_stock'] ?? $herramienta['stock_total'] ?? 1));
+        $stock_prestado = (int)($herramienta['stock_prestado'] ?? 0);
+        $stock_danado = (int)($herramienta['stock_danado'] ?? 0);
+        $stock_disponible = max(0, $stock_total - $stock_prestado - $stock_danado);
+        $estado = trim($body['estado'] ?? 'Disponible');
+
+        if ($stock_disponible == 0 && $stock_prestado > 0) {
+            $estado = 'Prestado';
         }
 
         Database::execute("
             UPDATE herramientas 
             SET codigo = :codigo, nombre = :nombre, marca = :marca, modelo = :modelo, 
-                numero_serie = :numero_serie, estado = :estado, ubicacion = :ubicacion, 
+                numero_serie = :numero_serie, stock_total = :stotal, stock_disponible = :sdisp,
+                estado = :estado, ubicacion = :ubicacion, 
                 foto_url = :foto_url, observaciones = :observaciones
             WHERE id = :id
         ", [
@@ -106,7 +144,9 @@ class HerramientaController {
             'marca' => trim($body['marca'] ?? ''),
             'modelo' => trim($body['modelo'] ?? ''),
             'numero_serie' => trim($body['numero_serie'] ?? ''),
-            'estado' => trim($body['estado'] ?? 'Disponible'),
+            'stotal' => $stock_total,
+            'sdisp' => $stock_disponible,
+            'estado' => $estado,
             'ubicacion' => trim($body['ubicacion'] ?? 'Bodega Mantenimiento'),
             'foto_url' => trim($body['foto_url'] ?? ''),
             'observaciones' => trim($body['observaciones'] ?? '')
@@ -118,7 +158,7 @@ class HerramientaController {
                 'uid' => $user['id'],
                 'unombre' => $user['nombre'],
                 'eid' => $id,
-                'detalle' => "Herramienta ID $id actualizada"
+                'detalle' => "Herramienta ID $id actualizada (Stock: $stock_total)"
             ]
         );
 
@@ -143,4 +183,42 @@ class HerramientaController {
 
         Response::success(null, 'Herramienta eliminada correctamente');
     }
+
+    public function getDisponibilidad(array $params): void {
+        AuthMiddleware::authenticate();
+        $id = (int)($params['id'] ?? 0);
+
+        $herramienta = Database::fetch("SELECT * FROM herramientas WHERE id = :id", ['id' => $id]);
+        if (!$herramienta) {
+            Response::error('Herramienta no encontrada.', 404);
+        }
+
+        // Active loans for this tool
+        $prestamosActivos = Database::query("
+            SELECT p.codigo_prestamo, p.fecha_prestamo, p.fecha_devolucion_estimada, p.escuela_proyecto,
+                   f.nombre AS funcionario_nombre, f.apellido AS funcionario_apellido, f.cargo AS funcionario_cargo, f.cedula AS funcionario_cedula,
+                   IFNULL(pd.cantidad, 1) AS cantidad
+            FROM prestamo_detalles pd
+            JOIN prestamos p ON pd.prestamo_id = p.id
+            JOIN funcionarios f ON p.funcionario_id = f.id
+            WHERE pd.herramienta_id = :hid AND p.estado = 'Prestado'
+            ORDER BY p.fecha_devolucion_estimada ASC
+        ", ['hid' => $id]);
+
+        // Damage notes for this tool
+        $notasDano = Database::query("
+            SELECT nd.*, f.nombre AS funcionario_nombre, f.apellido AS funcionario_apellido
+            FROM notas_dano nd
+            JOIN funcionarios f ON nd.funcionario_id = f.id
+            WHERE nd.herramienta_id = :hid
+            ORDER BY nd.id DESC
+        ", ['hid' => $id]);
+
+        Response::success([
+            'herramienta' => $herramienta,
+            'prestamos_activos' => $prestamosActivos,
+            'notas_dano' => $notasDano
+        ], 'Detalle explicativo de disponibilidad');
+    }
+}
 }

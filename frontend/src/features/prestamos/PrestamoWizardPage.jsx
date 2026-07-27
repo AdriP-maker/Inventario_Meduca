@@ -31,18 +31,39 @@ const PrestamoWizardPage = () => {
     });
   }, []);
 
-  const toggleHerramienta = (id) => {
-    if (selectedHerramientas.includes(id)) {
-      setSelectedHerramientas(selectedHerramientas.filter((item) => item !== id));
+  const [selectedHerramientasMap, setSelectedHerramientasMap] = useState({});
+
+  const toggleHerramienta = (id, stockDisp = 1) => {
+    const updated = { ...selectedHerramientasMap };
+    if (updated[id]) {
+      delete updated[id];
     } else {
-      setSelectedHerramientas([...selectedHerramientas, id]);
+      updated[id] = 1;
     }
+    setSelectedHerramientasMap(updated);
   };
 
+  const setCantidadHerramienta = (id, delta, maxDisp = 1) => {
+    const current = selectedHerramientasMap[id] || 1;
+    const next = Math.max(1, Math.min(maxDisp, current + delta));
+    setSelectedHerramientasMap({
+      ...selectedHerramientasMap,
+      [id]: next
+    });
+  };
+
+  const selectedHerramientasIds = Object.keys(selectedHerramientasMap).map(Number);
+  const totalCantidadSeleccionada = Object.values(selectedHerramientasMap).reduce((acc, c) => acc + c, 0);
+
   const handleFinish = async () => {
+    const payloadItems = Object.entries(selectedHerramientasMap).map(([id, cant]) => ({
+      id: parseInt(id, 10),
+      cantidad: cant
+    }));
+
     const err = validators.validatePrestamo({
       funcionario_id: selectedFuncionario?.id,
-      herramienta_ids: selectedHerramientas,
+      herramienta_ids: selectedHerramientasIds,
       escuela_proyecto: escuelaProyecto,
       fecha_devolucion_estimada: fechaDevolucion
     });
@@ -58,7 +79,8 @@ const PrestamoWizardPage = () => {
         escuela_proyecto: escuelaProyecto,
         fecha_devolucion_estimada: fechaDevolucion,
         observaciones: observaciones,
-        herramientas_ids: selectedHerramientas
+        herramientas: payloadItems,
+        herramientas_ids: selectedHerramientasIds
       });
 
       if (res.data.success) {
@@ -66,7 +88,7 @@ const PrestamoWizardPage = () => {
         navigate('/dashboard');
       }
     } catch (err) {
-      toast.error('Ocurrió un error al registrar el préstamo.');
+      toast.error(err.response?.data?.message || 'Ocurrió un error al registrar el préstamo.');
     } finally {
       setSubmitting(false);
     }
@@ -77,7 +99,6 @@ const PrestamoWizardPage = () => {
       <div className="card border-0 shadow-sm p-3 p-md-4">
         {/* Stepper Navigation */}
         <div className="mb-4 mb-md-5 position-relative" style={{ maxWidth: '850px', margin: '0 auto' }}>
-          {/* Background Connecting Line */}
           <div 
             className="position-absolute top-0 start-0 w-100 border-top border-2 text-secondary-subtle" 
             style={{ zIndex: 0, marginTop: '23px' }} 
@@ -129,10 +150,7 @@ const PrestamoWizardPage = () => {
         {/* Wizard Steps Content */}
         {step === 1 && (
           <div>
-            <h5 className="fw-bold text-dark mb-3">Paso 1: Seleccione el Funcionario Solicitante</h5>
-            <p className="text-muted mb-4" style={{ fontSize: '0.9rem' }}>
-              Busque y seleccione el funcionario técnico que retirará las herramientas del inventario.
-            </p>
+            <h5 className="fw-bold mb-3">1. Seleccionar Funcionario Responsable</h5>
             <div className="row g-3">
               {funcionarios.map((f) => (
                 <div key={f.id} className="col-12 col-md-6 col-lg-4">
@@ -161,41 +179,73 @@ const PrestamoWizardPage = () => {
           </div>
         )}
 
-        {/* Step 2: Seleccionar Herramientas */}
+        {/* Step 2: Seleccionar Herramientas con Cantidades */}
         {step === 2 && (
           <div>
-            <h5 className="fw-bold mb-3">2. Seleccionar Herramientas a prestar (Estado Disponible)</h5>
+            <h5 className="fw-bold mb-3">2. Seleccionar Productos y Cantidad a Prestar</h5>
             <div className="row g-3">
               {herramientas.length === 0 ? (
-                <div className="alert alert-warning">No hay herramientas disponibles en inventario.</div>
+                <div className="alert alert-warning">No hay herramientas con stock disponible en inventario.</div>
               ) : (
-                herramientas.map((h) => (
-                  <div key={h.id} className="col-12 col-md-6 col-lg-4">
-                    <div
-                      className={`card h-100 p-3 cursor-pointer border ${selectedHerramientas.includes(h.id) ? 'border-primary bg-primary-subtle' : ''}`}
-                      onClick={() => toggleHerramienta(h.id)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <div className="d-flex align-items-center gap-3">
-                        <input
-                          type="checkbox"
-                          className="form-check-input flex-shrink-0"
-                          checked={selectedHerramientas.includes(h.id)}
-                          onChange={() => {}}
-                        />
-                        <img src={h.foto_url} alt={h.nombre} className="rounded" style={{ width: '48px', height: '48px', objectFit: 'cover' }} />
-                        <div>
-                          <div className="fw-bold" style={{ fontSize: '0.9rem' }}>{h.nombre}</div>
-                          <div className="text-muted" style={{ fontSize: '0.775rem' }}>{h.codigo} • {h.marca}</div>
+                herramientas.map((h) => {
+                  const isSelected = !!selectedHerramientasMap[h.id];
+                  const cantSel = selectedHerramientasMap[h.id] || 1;
+                  const maxDisp = parseInt(h.stock_disponible ?? (h.estado === 'Disponible' ? 1 : 0), 10);
+
+                  return (
+                    <div key={h.id} className="col-12 col-md-6 col-lg-4">
+                      <div className={`card h-100 p-3 border transition-all ${isSelected ? 'border-primary bg-primary-subtle shadow-sm' : ''}`}>
+                        <div className="d-flex align-items-start gap-3">
+                          <input
+                            type="checkbox"
+                            className="form-check-input flex-shrink-0 mt-1 cursor-pointer"
+                            checked={isSelected}
+                            onChange={() => toggleHerramienta(h.id, maxDisp)}
+                          />
+                          <img src={h.foto_url} alt={h.nombre} className="rounded flex-shrink-0" style={{ width: '48px', height: '48px', objectFit: 'cover' }} />
+                          <div className="flex-grow-1">
+                            <div className="fw-bold text-dark" style={{ fontSize: '0.9rem' }}>{h.nombre}</div>
+                            <div className="text-muted mb-1" style={{ fontSize: '0.775rem' }}>{h.codigo} • {h.marca}</div>
+                            <div className="badge bg-success-subtle text-success border border-success-subtle" style={{ fontSize: '0.725rem' }}>
+                              Disponibles: {maxDisp} unidad(es)
+                            </div>
+
+                            {/* Quantity Selector if selected */}
+                            {isSelected && (
+                              <div className="mt-2 pt-2 border-top d-flex align-items-center justify-content-between">
+                                <span className="text-dark fw-semibold" style={{ fontSize: '0.8rem' }}>Cantidad:</span>
+                                <div className="input-group input-group-sm" style={{ width: '100px' }}>
+                                  <button
+                                    className="btn btn-outline-secondary"
+                                    type="button"
+                                    onClick={(e) => { e.stopPropagation(); setCantidadHerramienta(h.id, -1, maxDisp); }}
+                                    disabled={cantSel <= 1}
+                                  >-</button>
+                                  <input
+                                    type="text"
+                                    className="form-control text-center fw-bold bg-white"
+                                    value={cantSel}
+                                    readOnly
+                                  />
+                                  <button
+                                    className="btn btn-outline-secondary"
+                                    type="button"
+                                    onClick={(e) => { e.stopPropagation(); setCantidadHerramienta(h.id, 1, maxDisp); }}
+                                    disabled={cantSel >= maxDisp}
+                                  >+</button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
-            <div className="mt-3 text-muted">
-              Seleccionadas: <strong>{selectedHerramientas.length}</strong> herramientas.
+            <div className="mt-3 text-secondary fw-semibold">
+              Tipos de productos seleccionados: <strong>{selectedHerramientasIds.length}</strong> ({totalCantidadSeleccionada} unidad(es) total).
             </div>
           </div>
         )}

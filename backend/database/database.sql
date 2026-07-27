@@ -46,6 +46,10 @@ CREATE TABLE `herramientas` (
   `marca` VARCHAR(100) NOT NULL,
   `modelo` VARCHAR(100) DEFAULT NULL,
   `numero_serie` VARCHAR(100) DEFAULT NULL,
+  `stock_total` INT NOT NULL DEFAULT 1,
+  `stock_disponible` INT NOT NULL DEFAULT 1,
+  `stock_prestado` INT NOT NULL DEFAULT 0,
+  `stock_danado` INT NOT NULL DEFAULT 0,
   `estado` ENUM('Disponible', 'Prestado', 'Mantenimiento', 'Dañado') NOT NULL DEFAULT 'Disponible',
   `ubicacion` VARCHAR(100) DEFAULT 'Bodega Mantenimiento',
   `foto_url` TEXT DEFAULT NULL,
@@ -75,6 +79,7 @@ CREATE TABLE `prestamo_detalles` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `prestamo_id` INT NOT NULL,
   `herramienta_id` INT NOT NULL,
+  `cantidad` INT NOT NULL DEFAULT 1,
   `estado_entrega` ENUM('Bueno', 'Regular', 'Excelente') NOT NULL DEFAULT 'Bueno',
   `estado_devolucion` ENUM('Bueno', 'Regular', 'Excelente', 'Con Daño') DEFAULT NULL,
   `observaciones` TEXT DEFAULT NULL,
@@ -91,6 +96,23 @@ CREATE TABLE `devoluciones` (
   `observaciones` TEXT DEFAULT NULL,
   CONSTRAINT `fk_devoluciones_prestamo` FOREIGN KEY (`prestamo_id`) REFERENCES `prestamos` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_devoluciones_usuario` FOREIGN KEY (`usuario_registro_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 7. Table: notas_dano (Oficial MEDUCA)
+CREATE TABLE `notas_dano` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `codigo_nota` VARCHAR(30) NOT NULL UNIQUE,
+  `prestamo_id` INT NOT NULL,
+  `funcionario_id` INT NOT NULL,
+  `herramienta_id` INT NOT NULL,
+  `cantidad` INT NOT NULL DEFAULT 1,
+  `descripcion_dano` TEXT NOT NULL,
+  `estado_evaluacion` ENUM('Pendiente Evaluación', 'En Reparación', 'Cambio Solicitado', 'Descarte / Baja') NOT NULL DEFAULT 'Pendiente Evaluación',
+  `usuario_registro_id` INT DEFAULT NULL,
+  `fecha_registro` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT `fk_notas_prestamo` FOREIGN KEY (`prestamo_id`) REFERENCES `prestamos` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_notas_funcionario` FOREIGN KEY (`funcionario_id`) REFERENCES `funcionarios` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_notas_herramienta` FOREIGN KEY (`herramienta_id`) REFERENCES `herramientas` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 7. Table: historial_actividades

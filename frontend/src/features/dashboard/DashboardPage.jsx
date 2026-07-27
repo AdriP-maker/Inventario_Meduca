@@ -11,7 +11,9 @@ import {
   Eye,
   Undo2,
   FileText,
-  Clock
+  Clock,
+  AlertTriangle,
+  ArrowRight
 } from 'lucide-react';
 
 const DashboardPage = () => {
@@ -51,6 +53,9 @@ const DashboardPage = () => {
   const kpis = data?.kpis || {};
   const prestamosActivos = data?.prestamos_activos || [];
   const devueltosRecientemente = data?.devueltos_recientemente || [];
+
+  const hoy = new Date().toISOString().split('T')[0];
+  const prestamosVencidos = prestamosActivos.filter((p) => p.fecha_devolucion_estimada && p.fecha_devolucion_estimada < hoy);
 
   return (
     <Layout title="Dashboard" breadcrumbs="Mantenimiento • Electricidad • Refrigeración">
@@ -104,6 +109,29 @@ const DashboardPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Alert Banner: Overdue Loans for Supervisor Action */}
+      {prestamosVencidos.length > 0 && (
+        <div className="alert alert-danger shadow-sm border-danger border-2 p-3 mb-4 rounded-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div className="d-flex align-items-center gap-3">
+            <div className="bg-danger text-white p-2.5 rounded-circle d-flex align-items-center justify-content-center">
+              <AlertTriangle size={24} />
+            </div>
+            <div>
+              <h6 className="fw-bold mb-0.5 text-danger fs-6">
+                ¡Atención! Hay {prestamosVencidos.length} préstamo(s) vencido(s) pendiente(s) por recuperar.
+              </h6>
+              <div className="text-secondary" style={{ fontSize: '0.85rem' }}>
+                Los funcionarios responsables han sobrepasado la fecha límite de devolución. Tramita su recolección o comunícate con ellos.
+              </div>
+            </div>
+          </div>
+          <button onClick={() => navigate('/devoluciones')} className="btn btn-danger fw-bold d-flex align-items-center gap-1.5 px-3 py-1.5" style={{ fontSize: '0.85rem' }}>
+            <span>Gestionar Devoluciones</span>
+            <ArrowRight size={16} />
+          </button>
+        </div>
+      )}
 
       {/* Main Grid: Left Table & Right Side Panel */}
       <div className="row g-4">
