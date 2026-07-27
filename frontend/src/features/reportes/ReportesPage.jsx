@@ -123,15 +123,15 @@ const ReportesPage = () => {
       const rLogo = worksheet.addRow(['']);
       rLogo.height = 62;
 
-      // Add Larger Logo Image at top left above title text
+      // Add Centered Logo Image above title text
       if (LOGO_MEDUCA_BASE64) {
         const logoId = workbook.addImage({
           base64: LOGO_MEDUCA_BASE64.replace(/^data:image\/png;base64,/, ''),
           extension: 'png',
         });
         worksheet.addImage(logoId, {
-          tl: { col: 0, row: 0 },
-          ext: { width: 240, height: 60 }
+          tl: { col: 3.25, row: 0.1 },
+          ext: { width: 240, height: 58 }
         });
       }
 
@@ -967,9 +967,9 @@ const ReportesPage = () => {
 
             {/* Grid View Container Styled like Microsoft Excel */}
             <div className="bg-white text-dark p-3 rounded border overflow-auto" style={{ fontFamily: 'Segoe UI, Calibri, sans-serif', fontSize: '0.8rem' }}>
-              <div className="p-3 mb-2 bg-light border rounded">
-                <div className="mb-2">
-                  <img src={LOGO_MEDUCA_BASE64} alt="Logo MEDUCA Excel" style={{ height: '60px', maxWidth: '240px' }} className="object-fit-contain" />
+              <div className="p-3 mb-2 bg-light border rounded text-center">
+                <div className="mb-2 text-center">
+                  <img src={LOGO_MEDUCA_BASE64} alt="Logo MEDUCA Excel" style={{ height: '60px', maxWidth: '240px' }} className="mx-auto d-block object-fit-contain" />
                 </div>
                 <div className="fw-extrabold text-primary" style={{ fontSize: '0.95rem' }}>
                   REPÚBLICA DE PANAMÁ • MINISTERIO DE EDUCACIÓN
@@ -981,7 +981,7 @@ const ReportesPage = () => {
                   INFORME OFICIAL DE ANÁLISIS DE DATOS Y MÉTRICAS ({tipo.toUpperCase()})
                 </div>
                 <div className="text-muted" style={{ fontSize: '0.725rem' }}>
-                  FECHA DE EMISIÓN: {new Date().toLocaleDateString()} | GENERADO POR: {user?.nombre || 'Administrador'}
+                  FECHA DE EMISIÓN: {new Date().toLocaleDateString('es-PA')} | GENERADO POR: {user?.nombre || 'Administrador'}
                 </div>
               </div>
 
