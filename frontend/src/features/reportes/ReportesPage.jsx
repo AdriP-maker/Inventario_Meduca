@@ -131,8 +131,8 @@ const ReportesPage = () => {
           extension: 'png',
         });
         worksheet.addImage(logoId, {
-          tl: { col: 3.0, row: 0.08 },
-          br: { col: 5.0, row: 0.92 },
+          tl: { col: 3.58, row: 0.08 },
+          ext: { width: 240, height: 58 },
           editAs: 'oneCell'
         });
       }
@@ -467,7 +467,8 @@ const ReportesPage = () => {
         deleteRows: false,
         sort: false,
         autoFilter: false,
-        pivotTables: false
+        pivotTables: false,
+        objects: true
       });
 
       const buffer = await workbook.xlsx.writeBuffer();
