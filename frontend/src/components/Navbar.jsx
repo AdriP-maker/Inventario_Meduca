@@ -2,9 +2,9 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
-import { Bell, AlertTriangle, CheckCircle2, Info, ArrowRight } from 'lucide-react';
+import { Bell, AlertTriangle, CheckCircle2, Info, ArrowRight, Menu } from 'lucide-react';
 
-const Navbar = ({ title, breadcrumbs }) => {
+const Navbar = ({ title, breadcrumbs, onToggleSidebar }) => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
@@ -48,15 +48,24 @@ const Navbar = ({ title, breadcrumbs }) => {
 
   return (
     <header className="app-navbar">
-      <div>
-        <h2 className="nav-page-title">{title}</h2>
-        <div className="nav-breadcrumbs">
-          <span>Departamento de Mantenimiento</span>
-          {breadcrumbs && <span> • {breadcrumbs}</span>}
+      <div className="d-flex align-items-center">
+        <button
+          onClick={onToggleSidebar}
+          className="btn btn-light border p-2 me-2 text-dark d-lg-none rounded-3 shadow-sm"
+          title="Abrir menú de navegación"
+        >
+          <Menu size={22} />
+        </button>
+        <div>
+          <h2 className="nav-page-title">{title}</h2>
+          <div className="nav-breadcrumbs">
+            <span>Depto. Mantenimiento</span>
+            {breadcrumbs && <span className="d-none d-sm-inline"> • {breadcrumbs}</span>}
+          </div>
         </div>
       </div>
 
-      <div className="d-flex align-items-center gap-3">
+      <div className="d-flex align-items-center gap-2 gap-sm-3">
         <div className="position-relative" ref={dropdownRef}>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
@@ -74,7 +83,7 @@ const Navbar = ({ title, breadcrumbs }) => {
           {showNotifications && (
             <div
               className="card border-0 shadow-lg position-absolute end-0 mt-2 rounded-3"
-              style={{ width: '360px', zIndex: 9999 }}
+              style={{ width: 'min(360px, 88vw)', zIndex: 9999 }}
             >
               <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
                 <div className="fw-bold text-dark d-flex align-items-center gap-2">
@@ -153,15 +162,15 @@ const Navbar = ({ title, breadcrumbs }) => {
           )}
         </div>
 
-        <div className="d-flex align-items-center gap-2 ps-3 border-start">
-          <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style={{ width: '40px', height: '40px' }}>
+        <div className="d-flex align-items-center gap-2 ps-2 ps-sm-3 border-start">
+          <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style={{ width: '38px', height: '38px', flexShrink: 0 }}>
             {user?.nombre?.charAt(0) || 'C'}
           </div>
-          <div>
-            <div className="fw-bold text-dark" style={{ fontSize: '0.9rem', lineHeight: '1.2' }}>
+          <div className="user-profile-text">
+            <div className="fw-bold text-dark" style={{ fontSize: '0.85rem', lineHeight: '1.2' }}>
               {user?.nombre || 'Carlos Admin'}
             </div>
-            <div className="text-muted" style={{ fontSize: '0.775rem' }}>
+            <div className="text-muted" style={{ fontSize: '0.75rem' }}>
               {user?.rol || 'Administrador'}
             </div>
           </div>

@@ -74,21 +74,21 @@ const PrestamoWizardPage = () => {
 
   return (
     <Layout title="Nuevo Préstamo de Herramientas" breadcrumbs="Registrar un nuevo préstamo">
-      <div className="card border-0 shadow-sm p-4">
+      <div className="card border-0 shadow-sm p-3 p-md-4">
         {/* Stepper Navigation */}
-        <div className="mb-5 position-relative" style={{ maxWidth: '850px', margin: '0 auto' }}>
+        <div className="mb-4 mb-md-5 position-relative" style={{ maxWidth: '850px', margin: '0 auto' }}>
           {/* Background Connecting Line */}
           <div 
             className="position-absolute top-0 start-0 w-100 border-top border-2 text-secondary-subtle" 
             style={{ zIndex: 0, marginTop: '23px' }} 
           />
 
-          <div className="row g-2 position-relative z-1">
+          <div className="row g-1 g-sm-2 position-relative z-1">
             {[
-              { id: 1, title: 'Seleccionar Funcionario' },
-              { id: 2, title: 'Seleccionar Herramientas' },
-              { id: 3, title: 'Fechas y Observaciones' },
-              { id: 4, title: 'Confirmar Préstamo' }
+              { id: 1, title: 'Seleccionar Funcionario', shortTitle: 'Funcionario' },
+              { id: 2, title: 'Seleccionar Herramientas', shortTitle: 'Herramientas' },
+              { id: 3, title: 'Fechas y Observaciones', shortTitle: 'Detalles' },
+              { id: 4, title: 'Confirmar Préstamo', shortTitle: 'Confirmar' }
             ].map((st) => {
               const isActive = step >= st.id;
               const isCurrent = step === st.id;
@@ -99,9 +99,9 @@ const PrestamoWizardPage = () => {
                       isActive ? 'bg-primary text-white border border-2 border-primary' : 'bg-white text-secondary border border-2'
                     }`}
                     style={{ 
-                      width: '46px', 
-                      height: '46px', 
-                      fontSize: '1rem',
+                      width: '42px', 
+                      height: '42px', 
+                      fontSize: '0.95rem',
                       transform: isCurrent ? 'scale(1.08)' : 'scale(1)',
                       transition: 'all 0.2s ease'
                     }}
@@ -112,12 +112,13 @@ const PrestamoWizardPage = () => {
                     className={`fw-semibold text-center px-1 ${
                       isActive ? 'text-primary' : 'text-muted'
                     }`}
-                    style={{ fontSize: '0.8rem', lineHeight: '1.25' }}
+                    style={{ fontSize: '0.75rem', lineHeight: '1.2' }}
                   >
-                    <span className="d-block text-muted text-uppercase fw-bold mb-0.5" style={{ fontSize: '0.675rem', letterSpacing: '0.5px' }}>
+                    <span className="d-none d-sm-block text-muted text-uppercase fw-bold mb-0.5" style={{ fontSize: '0.65rem', letterSpacing: '0.5px' }}>
                       Paso {st.id}
                     </span>
-                    {st.title}
+                    <span className="d-none d-sm-inline">{st.title}</span>
+                    <span className="d-inline d-sm-none">{st.shortTitle}</span>
                   </div>
                 </div>
               );
