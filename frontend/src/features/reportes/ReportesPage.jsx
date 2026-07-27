@@ -167,13 +167,13 @@ const ReportesPage = () => {
       worksheet.mergeCells('A9:B9');
       const cellK1H = worksheet.getCell('A8');
       cellK1H.value = 'TOTAL REGISTROS';
-      cellK1H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
+      cellK1H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
       cellK1H.font = { bold: true, size: 9, color: { argb: 'FF15803D' } };
       cellK1H.alignment = { horizontal: 'center', vertical: 'middle' };
 
       const cellK1V = worksheet.getCell('A9');
       cellK1V.value = totalRegistros;
-      cellK1V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
+      cellK1V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
       cellK1V.font = { bold: true, size: 16, color: { argb: 'FF15803D' } };
       cellK1V.alignment = { horizontal: 'center', vertical: 'middle' };
 
@@ -182,13 +182,13 @@ const ReportesPage = () => {
       worksheet.mergeCells('C9:D9');
       const cellK2H = worksheet.getCell('C8');
       cellK2H.value = 'ALTA PRIORIDAD (CRÍTICOS)';
-      cellK2H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
+      cellK2H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
       cellK2H.font = { bold: true, size: 9, color: { argb: 'FFB91C1C' } };
       cellK2H.alignment = { horizontal: 'center', vertical: 'middle' };
 
       const cellK2V = worksheet.getCell('C9');
       cellK2V.value = criticosCount;
-      cellK2V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
+      cellK2V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
       cellK2V.font = { bold: true, size: 16, color: { argb: 'FFB91C1C' } };
       cellK2V.alignment = { horizontal: 'center', vertical: 'middle' };
 
@@ -197,13 +197,13 @@ const ReportesPage = () => {
       worksheet.mergeCells('E9:F9');
       const cellK3H = worksheet.getCell('E8');
       cellK3H.value = 'DISPONIBLES / NORMALES';
-      cellK3H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } };
+      cellK3H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
       cellK3H.font = { bold: true, size: 9, color: { argb: 'FF0369A1' } };
       cellK3H.alignment = { horizontal: 'center', vertical: 'middle' };
 
       const cellK3V = worksheet.getCell('E9');
       cellK3V.value = normalesCount;
-      cellK3V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } };
+      cellK3V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
       cellK3V.font = { bold: true, size: 16, color: { argb: 'FF0369A1' } };
       cellK3V.alignment = { horizontal: 'center', vertical: 'middle' };
 
@@ -212,23 +212,23 @@ const ReportesPage = () => {
       worksheet.mergeCells('G9:H9');
       const cellK4H = worksheet.getCell('G8');
       cellK4H.value = 'PENDIENTES / TRÁNSITO';
-      cellK4H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
+      cellK4H.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
       cellK4H.font = { bold: true, size: 9, color: { argb: 'FFA16207' } };
       cellK4H.alignment = { horizontal: 'center', vertical: 'middle' };
 
       const cellK4V = worksheet.getCell('G9');
       cellK4V.value = pendientesCount;
-      cellK4V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
+      cellK4V.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
       cellK4V.font = { bold: true, size: 16, color: { argb: 'FFA16207' } };
       cellK4V.alignment = { horizontal: 'center', vertical: 'middle' };
 
-      // Set borders for KPI cards
+      // Set clean black borders for KPI cards
       ['A8', 'A9', 'B8', 'B9', 'C8', 'C9', 'D8', 'D9', 'E8', 'E9', 'F8', 'F9', 'G8', 'G9', 'H8', 'H9'].forEach(pos => {
         worksheet.getCell(pos).border = {
-          top: { style: 'thin', color: { argb: 'FFCCCCCC' } },
-          bottom: { style: 'thin', color: { argb: 'FFCCCCCC' } },
-          left: { style: 'thin', color: { argb: 'FFCCCCCC' } },
-          right: { style: 'thin', color: { argb: 'FFCCCCCC' } }
+          top: { style: 'thin', color: { argb: 'FF000000' } },
+          bottom: { style: 'thin', color: { argb: 'FF000000' } },
+          left: { style: 'thin', color: { argb: 'FF000000' } },
+          right: { style: 'thin', color: { argb: 'FF000000' } }
         };
       });
 
@@ -237,7 +237,7 @@ const ReportesPage = () => {
       r11.font = { bold: true, size: 11, color: { argb: 'FF0A2540' } };
       r11.height = 22;
 
-      // Table Header Row (Dark Green #0D522C)
+      // Table Header Row (Dark Green #0D522C with Solid Black Border)
       let tableHeaders = [];
       if (tipo === 'prestamos') {
         tableHeaders = ['CÓDIGO PRÉSTAMO', 'FUNCIONARIO SOLICITANTE', 'CÉDULA', 'ESCUELA / PROYECTO', 'FECHA PRÉSTAMO', 'FECHA DEV. ESTIMADA', 'ESTADO', 'HERRAMIENTAS INVOLUCRADAS', 'REGISTRADO POR'];
@@ -256,14 +256,14 @@ const ReportesPage = () => {
         cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10 };
         cell.alignment = { horizontal: 'center', vertical: 'middle' };
         cell.border = {
-          top: { style: 'medium', color: { argb: 'FF0A3B1F' } },
-          bottom: { style: 'medium', color: { argb: 'FF0A3B1F' } },
-          left: { style: 'thin', color: { argb: 'FF1E6B3E' } },
-          right: { style: 'thin', color: { argb: 'FF1E6B3E' } }
+          top: { style: 'medium', color: { argb: 'FF000000' } },
+          bottom: { style: 'medium', color: { argb: 'FF000000' } },
+          left: { style: 'thin', color: { argb: 'FF000000' } },
+          right: { style: 'thin', color: { argb: 'FF000000' } }
         };
       });
 
-      // Data Rows with Zebra Striping & Status Color Highlighting
+      // Data Rows with Solid Black Gridlines & Snug Data Fills
       reporteData.forEach((item, idx) => {
         let rowValues = [];
         let stText = (item.estado_devolucion || item.estado || 'Disponible').toUpperCase();
@@ -314,16 +314,14 @@ const ReportesPage = () => {
 
         const dataRow = worksheet.addRow(rowValues);
         dataRow.height = 22;
-        const isEven = idx % 2 === 0;
-        const rowBg = isEven ? 'FFFFFFFF' : 'FFF9FAFB';
 
         dataRow.eachCell((cell, colNumber) => {
-          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: rowBg } };
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
           cell.border = {
-            top: { style: 'thin', color: { argb: 'FFE5E7EB' } },
-            bottom: { style: 'thin', color: { argb: 'FFE5E7EB' } },
-            left: { style: 'thin', color: { argb: 'FFE5E7EB' } },
-            right: { style: 'thin', color: { argb: 'FFE5E7EB' } }
+            top: { style: 'thin', color: { argb: 'FF000000' } },
+            bottom: { style: 'thin', color: { argb: 'FF000000' } },
+            left: { style: 'thin', color: { argb: 'FF000000' } },
+            right: { style: 'thin', color: { argb: 'FF000000' } }
           };
           cell.alignment = { vertical: 'middle' };
 
@@ -331,7 +329,7 @@ const ReportesPage = () => {
             cell.font = { bold: true, color: { argb: 'FF1A5BB8' } };
           }
 
-          // Custom Status Cell Highlighting
+          // Custom Status Cell Highlighting with Black Border
           const headerName = tableHeaders[colNumber - 1];
           if (headerName === 'ESTADO') {
             cell.alignment = { horizontal: 'center', vertical: 'middle' };
@@ -352,22 +350,28 @@ const ReportesPage = () => {
         });
       });
 
-      // Total Summary Row
+      // Total Summary Row with Black Border
       worksheet.mergeCells(`A${worksheet.rowCount + 1}:B${worksheet.rowCount + 1}`);
       const totalRowCell = worksheet.getCell(`A${worksheet.rowCount}`);
       totalRowCell.value = `TOTAL REGISTROS: ${totalRegistros}`;
       totalRowCell.font = { bold: true, color: { argb: 'FF0D522C' }, size: 10 };
       totalRowCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8F5E9' } };
       totalRowCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      totalRowCell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } },
+        bottom: { style: 'thin', color: { argb: 'FF000000' } },
+        left: { style: 'thin', color: { argb: 'FF000000' } },
+        right: { style: 'thin', color: { argb: 'FF000000' } }
+      };
 
-      // Calculate dynamic column widths with ample padding to prevent any truncation
+      // Calculate tight dynamic column widths adapting snugly to content length
       worksheet.columns.forEach((column) => {
         let maxLen = 0;
         column.eachCell({ includeEmpty: true }, (cell) => {
           const val = cell.value ? cell.value.toString() : '';
           if (val.length > maxLen) maxLen = val.length;
         });
-        column.width = Math.max(maxLen + 6, 20);
+        column.width = Math.max(maxLen + 3, 12);
       });
 
       // Lock all cells & protect worksheet against editing in Microsoft Excel
