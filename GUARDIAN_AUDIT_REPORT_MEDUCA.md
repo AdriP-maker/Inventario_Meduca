@@ -98,5 +98,9 @@
 2. **[Recomendación Backend]:** Mantener el límite de resultados o paginación si la base de datos de préstamos supera los 5,000 registros en el futuro.  
    `[ESTADO: RESUELTO - APLICADO CON LIMIT GUARDIAN 5000 EN ReporteController.php]`
 
+3. **[Seguridad GitGuardian - Incidente #35196377]:** Eliminación del token anon JWT de Supabase hardcodeado en `frontend/src/services/supabaseClient.js`. Se configuró la lectura estricta desde `import.meta.env` y se ignoraron archivos `.env` en `frontend/.gitignore`.  
+   `[ESTADO: RESUELTO - CORREGIDO EN CÓDIGO FUENTE Y GITIGNORE]`
+
 ---
 *Informe generado automáticamente por **Frontend Guardian** & **Backend Guardian**.*
+
