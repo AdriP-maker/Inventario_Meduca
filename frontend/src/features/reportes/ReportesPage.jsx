@@ -121,7 +121,7 @@ const ReportesPage = () => {
 
       // 1. Header Title Rows
       const r1 = worksheet.addRow(['REPÚBLICA DE PANAMÁ • MINISTERIO DE EDUCACIÓN - MEDUCA COCLÉ']);
-      r1.font = { bold: true, size: 14, color: { argb: 'FF0A2540' } };
+      r1.font = { bold: true, size: 13, color: { argb: 'FF0A2540' } };
 
       const r2 = worksheet.addRow([`INFORME DE ANÁLISIS DE DATOS Y MÉTRICAS DE INVENTARIO Y PRÉSTAMOS (${tipo.toUpperCase()})`]);
       r2.font = { bold: true, size: 11, color: { argb: 'FF1A5BB8' } };
@@ -137,7 +137,7 @@ const ReportesPage = () => {
         });
         worksheet.addImage(logoId, {
           tl: { col: 5, row: 0 },
-          ext: { width: 140, height: 48 }
+          ext: { width: 160, height: 50 }
         });
       }
 
@@ -149,27 +149,33 @@ const ReportesPage = () => {
 
       const kpiHead = worksheet.addRow([
         'TOTAL PUNTOS DE DATOS',
-        'MÉTRICAS ALTA PRIORIDAD (CRÍTICOS)',
-        'MÉTRICAS NORMALES (DISPONIBLES)',
-        'MÉTRICAS PENDIENTES (PRESTADOS)'
+        'ALTA PRIORIDAD (CRÍTICOS)',
+        'MÉTRICAS NORMALES',
+        'MÉTRICAS PENDIENTES'
       ]);
-      kpiHead.font = { bold: true, size: 9 };
-      kpiHead.alignment = { horizontal: 'center' };
+      kpiHead.height = 24;
+      kpiHead.eachCell((cell, colIdx) => {
+        cell.font = { bold: true, size: 9 };
+        cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+      });
 
       kpiHead.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
-      kpiHead.getCell(1).font = { bold: true, color: { argb: 'FF15803D' } };
+      kpiHead.getCell(1).font = { bold: true, color: { argb: 'FF15803D' }, size: 9 };
 
       kpiHead.getCell(2).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
-      kpiHead.getCell(2).font = { bold: true, color: { argb: 'FFB91C1C' } };
+      kpiHead.getCell(2).font = { bold: true, color: { argb: 'FFB91C1C' }, size: 9 };
 
       kpiHead.getCell(3).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } };
-      kpiHead.getCell(3).font = { bold: true, color: { argb: 'FF0369A1' } };
+      kpiHead.getCell(3).font = { bold: true, color: { argb: 'FF0369A1' }, size: 9 };
 
       kpiHead.getCell(4).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9C3' } };
-      kpiHead.getCell(4).font = { bold: true, color: { argb: 'FFA16207' } };
+      kpiHead.getCell(4).font = { bold: true, color: { argb: 'FFA16207' }, size: 9 };
 
       const kpiVal = worksheet.addRow([totalRegistros, criticosCount, normalesCount, pendientesCount]);
-      kpiVal.alignment = { horizontal: 'center' };
+      kpiVal.height = 28;
+      kpiVal.eachCell((cell) => {
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      });
 
       kpiVal.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCFCE7' } };
       kpiVal.getCell(1).font = { bold: true, size: 14, color: { argb: 'FF15803D' } };
@@ -200,6 +206,7 @@ const ReportesPage = () => {
       }
 
       const thRow = worksheet.addRow(tableHeaders);
+      thRow.height = 24;
       thRow.eachCell((cell) => {
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0D522C' } };
         cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10 };
@@ -217,7 +224,7 @@ const ReportesPage = () => {
             `${item.funcionario_nombre} ${item.funcionario_apellido}`,
             item.funcionario_cedula || 'N/A',
             item.escuela_proyecto,
-            item.fecha_prestamo ? new Date(item.fecha_prestamo).toLocaleString() : '',
+            item.fecha_prestamo ? new Date(item.fecha_prestamo).toLocaleDateString() : '',
             item.fecha_devolucion_estimada || 'N/A',
             stText,
             (item.herramientas || []).map(h => `${h.codigo} - ${h.nombre}`).join('; '),
@@ -239,7 +246,7 @@ const ReportesPage = () => {
             item.codigo_prestamo,
             `${item.funcionario_nombre} ${item.funcionario_apellido}`,
             item.escuela_proyecto,
-            item.fecha_devolucion ? new Date(item.fecha_devolucion).toLocaleString() : '',
+            item.fecha_devolucion ? new Date(item.fecha_devolucion).toLocaleDateString() : '',
             item.registrado_por || 'Sistema',
             item.observaciones || ''
           ];
@@ -271,20 +278,19 @@ const ReportesPage = () => {
       });
 
       // Total Summary Row
-      const totalRow = worksheet.addRow(['TOTAL', `[TOTAL REGISTROS: ${totalRegistros}]`, '', '', 'PROCESADO']);
-      totalRow.font = { bold: true };
+      const totalRow = worksheet.addRow(['RESUMEN DE REGISTROS', `Total Evaluados: ${totalRegistros}`, '', '', '✓ PROCESADO']);
+      totalRow.font = { bold: true, color: { argb: 'FF0D522C' } };
 
-      worksheet.columns = [
-        { width: 22 },
-        { width: 32 },
-        { width: 20 },
-        { width: 35 },
-        { width: 24 },
-        { width: 24 },
-        { width: 22 },
-        { width: 45 },
-        { width: 22 }
-      ];
+      // Calculate dynamic column widths to prevent truncation
+      worksheet.columns.forEach((column) => {
+        let maxLen = 0;
+        column.eachCell({ includeEmpty: true }, (cell) => {
+          const val = cell.value ? cell.value.toString() : '';
+          if (val.length > maxLen) maxLen = val.length;
+        });
+        column.width = Math.max(maxLen + 5, 20);
+      });
+
       // Lock all cells & protect worksheet against editing in Microsoft Excel
       worksheet.eachRow({ includeEmpty: true }, (row) => {
         row.eachCell({ includeEmpty: true }, (cell) => {
@@ -359,7 +365,7 @@ const ReportesPage = () => {
           letterRendering: true
         },
         jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'], tr: 'avoid' }
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['.report-kpi-block', 'tr'] }
       };
 
       await html2pdf().set(opt).from(element).save();
@@ -567,13 +573,18 @@ const ReportesPage = () => {
         <div id="reporte-export-area" className="p-3.5 pt-2.5 bg-white rounded shadow-sm border w-100" style={{ maxWidth: '960px' }}>
             {/* Style Injection for PDF Pagebreak Safety */}
             <style>{`
+              #reporte-export-area {
+                page-break-after: auto;
+              }
               #reporte-export-area table tr {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
               }
-              #reporte-export-area .card, #reporte-export-area .report-kpi-block {
+              #reporte-export-area .report-kpi-block {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
+                page-break-after: avoid !important;
+                break-after: avoid !important;
               }
             `}</style>
 

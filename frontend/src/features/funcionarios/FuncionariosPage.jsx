@@ -211,6 +211,8 @@ const FuncionariosPage = () => {
                       placeholder="Ej: 2-710-1234"
                       value={formData.cedula}
                       onChange={(e) => setFormData({ ...formData, cedula: e.target.value })}
+                      minLength={5}
+                      maxLength={15}
                       required
                     />
                   </div>
@@ -222,6 +224,8 @@ const FuncionariosPage = () => {
                       placeholder="Ej: Juan"
                       value={formData.nombre}
                       onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                      minLength={2}
+                      maxLength={40}
                       required
                     />
                   </div>
@@ -233,6 +237,8 @@ const FuncionariosPage = () => {
                       placeholder="Ej: Pérez"
                       value={formData.apellido}
                       onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
+                      minLength={2}
+                      maxLength={40}
                       required
                     />
                   </div>
@@ -244,6 +250,8 @@ const FuncionariosPage = () => {
                       placeholder="Ej: Técnico Electricista"
                       value={formData.cargo}
                       onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
+                      minLength={2}
+                      maxLength={50}
                       required
                     />
                   </div>
@@ -255,6 +263,8 @@ const FuncionariosPage = () => {
                       placeholder="Ej: Mantenimiento General"
                       value={formData.departamento}
                       onChange={(e) => setFormData({ ...formData, departamento: e.target.value })}
+                      minLength={2}
+                      maxLength={50}
                     />
                   </div>
                   <div className="col-12 col-md-6">
@@ -265,6 +275,8 @@ const FuncionariosPage = () => {
                       placeholder="Ej: 6501-1122"
                       value={formData.telefono}
                       onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+                      minLength={7}
+                      maxLength={15}
                     />
                   </div>
                   <div className="col-12">
@@ -275,6 +287,8 @@ const FuncionariosPage = () => {
                       placeholder="Ej: juan.perez@meduca.gob.pa"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      minLength={5}
+                      maxLength={60}
                     />
                   </div>
                 </div>

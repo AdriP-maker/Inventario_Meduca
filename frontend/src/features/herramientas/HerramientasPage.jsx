@@ -273,32 +273,38 @@ const HerramientasPage = () => {
               <form onSubmit={handleSubmit}>
                 <div className="modal-body row g-3">
                   <div className="col-12 col-md-4">
-                    <label className="form-label fw-semibold">Código</label>
+                    <label className="form-label fw-semibold">Código *</label>
                     <input
                       type="text"
                       className="form-control"
                       value={formData.codigo}
                       onChange={(e) => setFormData({ ...formData, codigo: e.target.value })}
+                      minLength={2}
+                      maxLength={30}
                       required
                     />
                   </div>
                   <div className="col-12 col-md-8">
-                    <label className="form-label fw-semibold">Nombre de Herramienta</label>
+                    <label className="form-label fw-semibold">Nombre de Herramienta *</label>
                     <input
                       type="text"
                       className="form-control"
                       value={formData.nombre}
                       onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                      minLength={2}
+                      maxLength={60}
                       required
                     />
                   </div>
                   <div className="col-12 col-md-4">
-                    <label className="form-label fw-semibold">Marca</label>
+                    <label className="form-label fw-semibold">Marca *</label>
                     <input
                       type="text"
                       className="form-control"
                       value={formData.marca}
                       onChange={(e) => setFormData({ ...formData, marca: e.target.value })}
+                      minLength={2}
+                      maxLength={40}
                       required
                     />
                   </div>
@@ -309,6 +315,8 @@ const HerramientasPage = () => {
                       className="form-control"
                       value={formData.modelo}
                       onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
+                      minLength={1}
+                      maxLength={40}
                     />
                   </div>
                   <div className="col-12 col-md-4">
@@ -318,6 +326,8 @@ const HerramientasPage = () => {
                       className="form-control"
                       value={formData.numero_serie}
                       onChange={(e) => setFormData({ ...formData, numero_serie: e.target.value })}
+                      minLength={1}
+                      maxLength={40}
                     />
                   </div>
                   <div className="col-12 col-md-6">
@@ -334,12 +344,15 @@ const HerramientasPage = () => {
                     </select>
                   </div>
                   <div className="col-12 col-md-6">
-                    <label className="form-label fw-semibold">Ubicación</label>
+                    <label className="form-label fw-semibold">Ubicación *</label>
                     <input
                       type="text"
                       className="form-control"
                       value={formData.ubicacion}
                       onChange={(e) => setFormData({ ...formData, ubicacion: e.target.value })}
+                      minLength={2}
+                      maxLength={50}
+                      required
                     />
                   </div>
 

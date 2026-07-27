@@ -205,23 +205,26 @@ const PrestamoWizardPage = () => {
             <h5 className="fw-bold mb-3">3. Fechas y Ubicación del Trabajo</h5>
             <div className="row g-3">
               <div className="col-12">
-                <label className="form-label fw-semibold">Escuela / Proyecto / Lugar de Trabajo</label>
+                <label className="form-label fw-semibold">Escuela / Proyecto / Lugar de Trabajo *</label>
                 <input
                   type="text"
                   className="form-control form-control-lg"
                   placeholder="Ej: Escuela José María La Vega - Penonomé"
                   value={escuelaProyecto}
                   onChange={(e) => setEscuelaProyecto(e.target.value)}
+                  minLength={3}
+                  maxLength={100}
                   required
                 />
               </div>
 
               <div className="col-12 col-md-6">
-                <label className="form-label fw-semibold">Fecha Estimada de Devolución</label>
+                <label className="form-label fw-semibold">Fecha Estimada de Devolución *</label>
                 <input
                   type="date"
                   className="form-control"
                   value={fechaDevolucion}
+                  min={new Date().toISOString().split('T')[0]}
                   onChange={(e) => setFechaDevolucion(e.target.value)}
                   required
                 />
@@ -234,6 +237,7 @@ const PrestamoWizardPage = () => {
                   rows="3"
                   placeholder="Describa el trabajo a realizar o el estado de las herramientas al entregar..."
                   value={observaciones}
+                  maxLength={200}
                   onChange={(e) => setObservaciones(e.target.value)}
                 ></textarea>
               </div>
@@ -241,50 +245,52 @@ const PrestamoWizardPage = () => {
           </div>
         )}
 
-        {/* Step 4: Confirmar */}
+        {/* Step 4: Resumen y Confirmación */}
         {step === 4 && (
           <div>
-            <h5 className="fw-bold mb-3 text-success d-flex align-items-center gap-2">
-              <CheckCircle2 size={24} />
-              <span>4. Confirmación de Datos del Préstamo</span>
-            </h5>
-            <div className="bg-light p-4 rounded border mb-4">
+            <h5 className="fw-bold mb-3">4. Confirmación y Registro de Préstamo</h5>
+            <div className="card bg-light border-0 p-4 mb-4">
               <div className="row g-3">
-                <div className="col-12 col-md-6">
-                  <span className="text-muted d-block" style={{ fontSize: '0.85rem' }}>Funcionario Receptor:</span>
-                  <strong className="fs-6">{selectedFuncionario?.nombre} {selectedFuncionario?.apellido}</strong> ({selectedFuncionario?.cargo})
+                <div className="col-md-6">
+                  <span className="text-muted d-block fs-7">Funcionario Solicitante:</span>
+                  <span className="fw-bold text-dark fs-6">{selectedFuncionario?.nombre} {selectedFuncionario?.apellido}</span>
+                  <span className="d-block text-secondary fs-7">{selectedFuncionario?.cargo} ({selectedFuncionario?.cedula})</span>
                 </div>
-                <div className="col-12 col-md-6">
-                  <span className="text-muted d-block" style={{ fontSize: '0.85rem' }}>Escuela / Proyecto:</span>
-                  <strong className="fs-6">{escuelaProyecto}</strong>
-                </div>
-                <div className="col-12 col-md-6">
-                  <span className="text-muted d-block" style={{ fontSize: '0.85rem' }}>Fecha Dev. Estimada:</span>
-                  <strong>{fechaDevolucion}</strong>
-                </div>
-                <div className="col-12">
-                  <span className="text-muted d-block" style={{ fontSize: '0.85rem' }}>Herramientas Seleccionadas ({selectedHerramientas.length}):</span>
-                  <ul className="mt-1 mb-0">
-                    {herramientas.filter(h => selectedHerramientas.includes(h.id)).map(h => (
-                      <li key={h.id}><strong>{h.codigo}</strong> - {h.nombre} ({h.marca})</li>
-                    ))}
-                  </ul>
+                <div className="col-md-6">
+                  <span className="text-muted d-block fs-7">Lugar / Proyecto:</span>
+                  <span className="fw-bold text-dark fs-6">{escuelaProyecto}</span>
+                  <span className="d-block text-primary fs-7">Devolución Estimada: {fechaDevolucion}</span>
                 </div>
               </div>
+            </div>
+
+            <h6 className="fw-bold mb-2">Herramientas Asignadas ({selectedHerramientas.length}):</h6>
+            <div className="list-group mb-4">
+              {herramientas.filter(h => selectedHerramientas.includes(h.id)).map(h => (
+                <div key={h.id} className="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <span className="fw-bold text-dark me-2">{h.codigo}</span>
+                    <span>{h.nombre} ({h.marca})</span>
+                  </div>
+                  <span className="badge bg-success-subtle text-success">Disponible</span>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Stepper Buttons */}
-        <div className="d-flex justify-content-between mt-4 pt-3 border-top">
-          <button
-            className="btn btn-outline-secondary d-flex align-items-center gap-2"
-            onClick={() => setStep(step - 1)}
-            disabled={step === 1}
-          >
-            <ArrowLeft size={18} />
-            <span>Anterior</span>
-          </button>
+        {/* Wizard Controls */}
+        <div className="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+          {step > 1 ? (
+            <button
+              className="btn btn-outline-secondary d-flex align-items-center gap-2 fw-semibold"
+              onClick={() => setStep(step - 1)}
+              disabled={submitting}
+            >
+              <ArrowLeft size={18} />
+              <span>Anterior</span>
+            </button>
+          ) : <div />}
 
           {step < 4 ? (
             <button
@@ -293,7 +299,16 @@ const PrestamoWizardPage = () => {
               onClick={() => {
                 if (step === 1 && !selectedFuncionario) return toast.warning('Debe seleccionar un funcionario responsable del préstamo.');
                 if (step === 2 && selectedHerramientas.length === 0) return toast.warning('Debe seleccionar al menos una herramienta disponible.');
-                if (step === 3 && !escuelaProyecto) return toast.warning('Ingrese el nombre del proyecto o escuela destino.');
+                if (step === 3) {
+                  const err = validators.validatePrestamo({
+                    funcionario_id: selectedFuncionario?.id,
+                    herramientas_ids: selectedHerramientas,
+                    escuela_proyecto: escuelaProyecto,
+                    fecha_devolucion_estimada: fechaDevolucion,
+                    observaciones: observaciones
+                  });
+                  if (err) return toast.warning(err);
+                }
                 setStep(step + 1);
               }}
             >
