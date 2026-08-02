@@ -135,7 +135,7 @@ async function routeSupabase(method, url, data) {
     if (method === 'POST') return await supabaseApi.saveConfiguracion(data);
   }
   if (cleanUrl === '/configuracion/cambiar-password') {
-    return { data: { success: true, message: 'Contraseña actualizada.' } };
+    return await supabaseApi.cambiarPassword(data);
   }
   if (cleanUrl === '/upload') {
     return { data: { success: true, url: data?.image_base64 || '' } };

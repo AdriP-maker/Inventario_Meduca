@@ -45,6 +45,38 @@ export const supabaseApi = {
     };
   },
 
+  // Change Password
+  async cambiarPassword({ nueva_password }) {
+    if (!nueva_password || nueva_password.length < 6) {
+      throw { response: { data: { message: 'La contraseña debe tener al menos 6 caracteres.' } } };
+    }
+
+    // Get current user ID from localStorage
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!currentUser?.id) {
+      throw { response: { data: { message: 'No se pudo identificar al usuario actual.' } } };
+    }
+
+    // Hash the new password with bcrypt (cost 12, same as PHP)
+    const salt = await bcrypt.genSalt(12);
+    const newHash = await bcrypt.hash(nueva_password, salt);
+
+    const { error } = await supabase
+      .from('usuarios')
+      .update({ password_hash: newHash })
+      .eq('id', currentUser.id);
+
+    if (error) {
+      throw { response: { data: { message: 'Error al actualizar la contraseña: ' + error.message } } };
+    }
+
+    return {
+      data: {
+        success: true,
+        message: 'Contraseña actualizada correctamente.'
+      }
+    };
+  },
 
   // Dashboard Stats
   async getDashboardStats() {
