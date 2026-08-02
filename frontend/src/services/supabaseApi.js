@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient.js';
 import { validators } from '../utils/validators.js';
+import bcrypt from 'bcryptjs';
 
 // Serverless Supabase API Service replacing legacy PHP backend
 export const supabaseApi = {
@@ -17,11 +18,21 @@ export const supabaseApi = {
     }
 
     const u = users[0];
+
+    // ✅ Verify password against bcrypt hash (same as PHP password_verify)
+    const passwordValid = await bcrypt.compare(password, u.password_hash);
+    if (!passwordValid) {
+      throw { response: { data: { message: 'Usuario o contraseña incorrectos.' } } };
+    }
+
+    // Generate a simple session token from user data
+    const sessionToken = btoa(JSON.stringify({ id: u.id, usuario: u.usuario, ts: Date.now() }));
+
     return {
       data: {
         success: true,
         data: {
-          token: 'supabase-jwt-session-token',
+          token: sessionToken,
           user: {
             id: u.id,
             usuario: u.usuario,
@@ -33,6 +44,7 @@ export const supabaseApi = {
       }
     };
   },
+
 
   // Dashboard Stats
   async getDashboardStats() {

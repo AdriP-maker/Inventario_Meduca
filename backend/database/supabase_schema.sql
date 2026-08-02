@@ -159,9 +159,9 @@ ALTER TABLE configuracion DISABLE ROW LEVEL SECURITY;
 
 -- SEED DATA
 
--- Usuarios
+-- Usuarios (password: Meduca@2026!)
 INSERT INTO usuarios (id, nombre, usuario, email, password_hash, rol, estado) VALUES
-(1, 'Carlos Admin', 'admin', 'carlos.admin@meduca.gob.pa', '$2y$10$L6xQ53ttMr9Q9pnqeRjZOuF2UBZ2viKFafJ4Rg3AVIo0pv7AsL7oe', 'Administrador', 'Activo');
+(1, 'Carlos Admin', 'admin', 'carlos.admin@meduca.gob.pa', '$2y$12$3.8wQ2xio6DzATh.TRrQFuyS2O16w2huibZTx4KYf3RP88cc14Ls.', 'Administrador', 'Activo');
 
 -- Funcionarios
 INSERT INTO funcionarios (id, cedula, nombre, apellido, cargo, departamento, telefono, email) VALUES
